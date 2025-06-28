@@ -1,0 +1,79 @@
+# Code198x Amiga Development Environment
+
+FROM ubuntu:22.04
+
+LABEL maintainer="Code198x Team"
+LABEL description="Amiga development environment with VASM and FS-UAE"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    wget \
+    curl \
+    unzip \
+    make \
+    gcc \
+    x11-apps \
+    xvfb \
+    libsdl2-dev \
+    libglib2.0-dev \
+    libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create development user
+RUN useradd -m -s /bin/bash dev && \
+    echo "dev:dev" | chpasswd && \
+    usermod -aG sudo dev
+
+# Set up workspace
+WORKDIR /workspace
+RUN chown dev:dev /workspace
+
+# Install VASM (build from source)
+RUN mkdir -p /tmp/vasm && \
+    cd /tmp/vasm && \
+    wget http://sun.hasenbraten.de/vasm/release/vasm.tar.gz && \
+    tar xzf vasm.tar.gz && \
+    cd vasm && \
+    make CPU=m68k SYNTAX=mot && \
+    cp vasmm68k_mot vobjdump /usr/local/bin/ && \
+    cd / && rm -rf /tmp/vasm
+
+# Install FS-UAE
+RUN mkdir -p /tmp/fsuae && \
+    cd /tmp/fsuae && \
+    wget https://fs-uae.net/stable/linux-x86-64/fs-uae_3.1.66_linux-x86-64.tar.xz && \
+    tar xf fs-uae_3.1.66_linux-x86-64.tar.xz && \
+    cp fs-uae_3.1.66_linux-x86-64/fs-uae /usr/local/bin/ && \
+    cp fs-uae_3.1.66_linux-x86-64/fs-uae-device-helper /usr/local/bin/ || true && \
+    cd / && rm -rf /tmp/fsuae
+
+# Copy templates and scripts
+COPY templates/amiga-basic/ /workspace/amiga-template/
+COPY scripts/ /workspace/scripts/
+RUN chown -R dev:dev /workspace
+
+# Switch to development user
+USER dev
+
+# Set up environment
+ENV DISPLAY=:99
+ENV PATH="/workspace/scripts:$PATH"
+
+# Create test script
+RUN echo 'echo "Testing Amiga environment..."' > /workspace/test.sh && \
+    echo 'cd amiga-template && ./build.sh' >> /workspace/test.sh && \
+    chmod +x /workspace/test.sh
+
+# Default command
+CMD ["/bin/bash"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD vasmm68k_mot -h > /dev/null 2>&1 || exit 1
+
+# Expose X11 for FS-UAE
+EXPOSE 6000

@@ -1,0 +1,58 @@
+# Code198x Commodore 64 Development Environment
+
+FROM ubuntu:22.04
+
+LABEL maintainer="Code198x Team"
+LABEL description="Commodore 64 development environment with ACME and VICE"
+
+# Prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    wget \
+    curl \
+    unzip \
+    acme \
+    vice \
+    x11-apps \
+    xvfb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create development user
+RUN useradd -m -s /bin/bash dev && \
+    echo "dev:dev" | chpasswd && \
+    usermod -aG sudo dev
+
+# Set up workspace
+WORKDIR /workspace
+RUN chown dev:dev /workspace
+
+# Copy templates and scripts
+COPY templates/c64-basic/ /workspace/c64-template/
+COPY scripts/ /workspace/scripts/
+RUN chown -R dev:dev /workspace
+
+# Switch to development user
+USER dev
+
+# Set up environment
+ENV DISPLAY=:99
+ENV PATH="/workspace/scripts:$PATH"
+
+# Create a simple test program
+RUN echo 'echo "Testing C64 environment..."' > /workspace/test.sh && \
+    echo 'cd c64-template && ./build.sh' >> /workspace/test.sh && \
+    chmod +x /workspace/test.sh
+
+# Default command
+CMD ["/bin/bash"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD acme -h > /dev/null || exit 1
+
+# Expose X11 for VICE
+EXPOSE 6000
