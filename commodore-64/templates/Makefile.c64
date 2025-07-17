@@ -1,0 +1,30 @@
+# Makefile for Commodore 64 assembly projects
+# Usage: make
+# Usage: make clean
+
+# Project name
+PROJECT = game
+
+# Source files
+SOURCES = main.asm
+
+# Assembler
+ASM = acme
+ASMFLAGS = -f cbm
+
+# Default target
+all: $(PROJECT).prg
+
+# Build rule
+$(PROJECT).prg: $(SOURCES)
+	$(ASM) $(ASMFLAGS) -o $@ $<
+
+# Clean build files
+clean:
+	rm -f $(PROJECT).prg
+
+# Run in emulator (if installed locally)
+run: $(PROJECT).prg
+	x64sc $(PROJECT).prg
+
+.PHONY: all clean run

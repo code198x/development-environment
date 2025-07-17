@@ -1,0 +1,96 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '*/Dockerfile'
+      - '.github/workflows/docker-build.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '*/Dockerfile'
+
+env:
+  DOCKER_HUB_USERNAME: stevehill
+
+jobs:
+  build-commodore-64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ env.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    
+    - name: Build and push Commodore 64 image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./commodore-64
+        push: true
+        tags: |
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:commodore-64
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:commodore-64-latest
+
+  build-zx-spectrum:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ env.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    
+    - name: Build and push ZX Spectrum image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./zx-spectrum
+        push: true
+        tags: |
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:zx-spectrum
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:zx-spectrum-latest
+
+  build-nes:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ env.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    
+    - name: Build and push NES image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./nes
+        push: true
+        tags: |
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:nes
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:nes-latest
+
+  build-amiga:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ env.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+    
+    - name: Build and push Amiga image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./amiga
+        push: true
+        tags: |
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:amiga
+          ${{ env.DOCKER_HUB_USERNAME }}/code198x:amiga-latest

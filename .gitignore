@@ -1,0 +1,23 @@
+# Build outputs
+*.prg
+*.tap
+*.nes
+*.adf
+*.o
+*.lst
+*.bin
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*~
+.vscode/
+.idea/
+
+# Test directories
+workspace/
+test/
+tmp/
