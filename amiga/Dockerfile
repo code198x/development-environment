@@ -12,18 +12,16 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Build and install vasm
-RUN wget -q http://phoenix.owl.de/vasm/daily/vasm.tar.gz -O /tmp/vasm.tar.gz \
-    && cd /tmp \
-    && tar xzf vasm.tar.gz \
-    && cd vasm \
+# Build and install vasm from GitHub mirror
+RUN git clone https://github.com/kusma/vasm.git /tmp/vasm \
+    && cd /tmp/vasm \
     && make CPU=m68k SYNTAX=mot \
     && cp vasmm68k_mot /usr/local/bin/ \
     && cd / \
-    && rm -rf /tmp/vasm*
+    && rm -rf /tmp/vasm
 
-# Install amitools for ADF manipulation
-RUN pip3 install amitools
+# Install amitools for ADF manipulation (Ubuntu 24.04 requires --break-system-packages)
+RUN pip3 install amitools --break-system-packages
 
 # Create workspace directory
 WORKDIR /workspace
