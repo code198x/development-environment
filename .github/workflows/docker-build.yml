@@ -29,15 +29,9 @@ permissions:
   actions: read
 
 jobs:
-  build-base-images:
-    name: Build Base Images
-    uses: ./.github/workflows/build-base-images.yml
-    secrets: inherit
-
   build-matrix:
     name: Build ${{ matrix.system }}
     runs-on: ubuntu-latest
-    needs: build-base-images
     strategy:
       fail-fast: false
       matrix:

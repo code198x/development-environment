@@ -1,15 +1,14 @@
 # SjASMPlus for ZX Spectrum
-FROM ghcr.io/code198x/z80-base:latest
+FROM ubuntu:24.04
 
 LABEL maintainer="code198x"
 LABEL description="SjASMPlus assembler for ZX Spectrum development"
 LABEL version="1.0.0"
-LABEL system="sinclair-zx-spectrum"
 
-USER root
-
-# Install additional dependencies for SjASMPlus
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
@@ -17,10 +16,11 @@ RUN apt-get update && apt-get install -y \
 RUN git clone --recursive https://github.com/z00m128/sjasmplus.git /tmp/sjasmplus && \
     cd /tmp/sjasmplus && \
     make && \
-    cp sjasmplus /opt/z80-tools/bin/ && \
+    cp sjasmplus /usr/local/bin/ && \
     rm -rf /tmp/sjasmplus
 
-USER retro
+# Create workspace directory
+WORKDIR /workspace
 
 # Set sjasmplus as the entrypoint
 ENTRYPOINT ["sjasmplus"]
