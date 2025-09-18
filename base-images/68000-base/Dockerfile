@@ -1,6 +1,6 @@
 # Base image for 68000-family processors
 # Includes common 68000 tools and utilities
-FROM code198x/retro-base:latest
+FROM ghcr.io/code198x/retro-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="Base image for 68000 family development"

@@ -1,6 +1,6 @@
 # Base image for Z80-family processors
 # Includes common Z80 tools and utilities
-FROM code198x/retro-base:latest
+FROM ghcr.io/code198x/retro-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="Base image for Z80 family development"

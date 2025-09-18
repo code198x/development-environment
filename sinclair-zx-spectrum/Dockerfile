@@ -1,5 +1,5 @@
 # SjASMPlus for ZX Spectrum
-FROM code198x/z80-base:latest
+FROM ghcr.io/code198x/z80-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="SjASMPlus assembler for ZX Spectrum development"

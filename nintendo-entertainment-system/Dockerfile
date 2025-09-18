@@ -1,5 +1,5 @@
 # cc65 for Nintendo Entertainment System
-FROM code198x/6502-base:latest
+FROM ghcr.io/code198x/6502-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="cc65 assembler suite for NES development"

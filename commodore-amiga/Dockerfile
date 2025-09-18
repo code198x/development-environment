@@ -1,5 +1,5 @@
 # VASM for Commodore Amiga
-FROM code198x/68000-base:latest
+FROM ghcr.io/code198x/68000-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="VASM assembler for Commodore Amiga development"
