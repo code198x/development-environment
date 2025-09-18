@@ -28,11 +28,9 @@ permissions:
   actions: read
 
 jobs:
-  build-base-images:
-    name: Build Base Images
+  build-retro-base:
+    name: Build retro-base
     runs-on: ubuntu-latest
-    outputs:
-      built: ${{ steps.build.outputs.built }}
 
     steps:
       - name: Checkout code
@@ -69,67 +67,124 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build retro-base
-        id: build-retro-base
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.GHCR_ORG }}/retro-base
+            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/retro-base', env.DOCKER_ORG) || '' }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value={{date 'YYYYMMDD'}},enable={{is_default_branch}}
+
+      - name: Build and push retro-base
         uses: docker/build-push-action@v5
         with:
           context: ./base-images/retro-base
           file: ./base-images/retro-base/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ env.GHCR_ORG }}/retro-base:latest
-            ${{ env.GHCR_ORG }}/retro-base:${{ github.run_number }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/retro-base:latest', env.DOCKER_ORG) || '' }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/retro-base:{1}', env.DOCKER_ORG, github.run_number) || '' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build 6502-base
+  build-arch-bases:
+    name: Build ${{ matrix.base-image }}
+    runs-on: ubuntu-latest
+    needs: build-retro-base
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - base-image: 6502-base
+            architecture: 6502
+            description: "Base image for 6502 family processors"
+          - base-image: z80-base
+            architecture: z80
+            description: "Base image for Z80 family processors"
+          - base-image: 68000-base
+            architecture: 68000
+            description: "Base image for 68000 family processors"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Check for Docker Hub credentials
+        id: check-docker-creds
+        run: |
+          if [ -n "${{ secrets.DOCKER_USERNAME }}" ] && [ -n "${{ secrets.DOCKER_TOKEN }}" ]; then
+            echo "has-creds=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-creds=false" >> $GITHUB_OUTPUT
+            echo "⚠️ Docker Hub credentials not configured. Will push to GitHub Container Registry only."
+          fi
+
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request' && steps.check-docker-creds.outputs.has-creds == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.GHCR_ORG }}/${{ matrix.base-image }}
+            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/{1}', env.DOCKER_ORG, matrix.base-image) || '' }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value={{date 'YYYYMMDD'}},enable={{is_default_branch}}
+
+      - name: Build and push ${{ matrix.base-image }}
         uses: docker/build-push-action@v5
         with:
-          context: ./base-images/6502-base
-          file: ./base-images/6502-base/Dockerfile
+          context: ./base-images/${{ matrix.base-image }}
+          file: ./base-images/${{ matrix.base-image }}/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ env.GHCR_ORG }}/6502-base:latest
-            ${{ env.GHCR_ORG }}/6502-base:${{ github.run_number }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/6502-base:latest', env.DOCKER_ORG) || '' }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/6502-base:{1}', env.DOCKER_ORG, github.run_number) || '' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build z80-base
-        uses: docker/build-push-action@v5
-        with:
-          context: ./base-images/z80-base
-          file: ./base-images/z80-base/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ env.GHCR_ORG }}/z80-base:latest
-            ${{ env.GHCR_ORG }}/z80-base:${{ github.run_number }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/z80-base:latest', env.DOCKER_ORG) || '' }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/z80-base:{1}', env.DOCKER_ORG, github.run_number) || '' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+  output-results:
+    name: Output Build Results
+    runs-on: ubuntu-latest
+    needs: [build-retro-base, build-arch-bases]
+    outputs:
+      built: "true"
 
-      - name: Build 68000-base
-        uses: docker/build-push-action@v5
-        with:
-          context: ./base-images/68000-base
-          file: ./base-images/68000-base/Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: |
-            ${{ env.GHCR_ORG }}/68000-base:latest
-            ${{ env.GHCR_ORG }}/68000-base:${{ github.run_number }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/68000-base:latest', env.DOCKER_ORG) || '' }}
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/68000-base:{1}', env.DOCKER_ORG, github.run_number) || '' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Mark as built
-        id: build
-        run: echo "built=true" >> $GITHUB_OUTPUT
+    steps:
+      - name: Summary
+        run: |
+          echo "✅ All base images built successfully!"
+          echo "📦 Base images available:"
+          echo "  - ${{ env.GHCR_ORG }}/retro-base:latest"
+          echo "  - ${{ env.GHCR_ORG }}/6502-base:latest"
+          echo "  - ${{ env.GHCR_ORG }}/z80-base:latest"
+          echo "  - ${{ env.GHCR_ORG }}/68000-base:latest"
