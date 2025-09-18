@@ -21,6 +21,11 @@ env:
   DOCKER_ORG: code198x
   GHCR_ORG: ghcr.io/code198x
 
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
 jobs:
   build-matrix:
     name: Build ${{ matrix.system }}
@@ -96,9 +101,9 @@ jobs:
           images: |
             ${{ env.DOCKER_ORG }}/${{ matrix.system }}
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
-            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix={{branch}}-
             type=raw,value={{date 'YYYYMMDD'}},enable={{is_default_branch}}
 
@@ -109,9 +114,9 @@ jobs:
           images: |
             ${{ env.GHCR_ORG }}/${{ matrix.system }}
           tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
-            type=raw,value=latest,enable={{is_default_branch}}
             type=sha,prefix={{branch}}-
             type=raw,value={{date 'YYYYMMDD'}},enable={{is_default_branch}}
 
