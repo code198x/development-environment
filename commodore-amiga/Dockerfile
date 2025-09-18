@@ -12,13 +12,21 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download and build VASM
-RUN curl -L http://phoenix.owl.de/tags/vasm1_9.tar.gz -o /tmp/vasm.tar.gz && \
+# Note: Using multiple mirror URLs for reliability
+RUN for url in \
+        "http://phoenix.owl.de/tags/vasm1_9.tar.gz" \
+        "http://sun.hasenbraten.de/vasm/release/vasm.tar.gz" \
+        "https://github.com/mbitsnbites/vasm/archive/refs/heads/master.tar.gz"; do \
+        echo "Trying to download from: $url" && \
+        curl -L --connect-timeout 10 --retry 3 "$url" -o /tmp/vasm.tar.gz && break || \
+        echo "Failed to download from $url, trying next..."; \
+    done && \
     cd /tmp && \
     tar -xzf vasm.tar.gz && \
-    cd vasm && \
+    cd vasm* && \
     make CPU=m68k SYNTAX=mot && \
     cp vasmm68k_mot /usr/local/bin/ && \
-    cp vobjdump /usr/local/bin/ && \
+    cp vobjdump /usr/local/bin/ 2>/dev/null || true && \
     rm -rf /tmp/vasm*
 
 # Create workspace directory

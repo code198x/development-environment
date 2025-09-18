@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
     cmake \
     && rm -rf /var/lib/apt/lists/*
 
-# Build SjASMPlus from source
-RUN git clone https://github.com/z00m128/sjasmplus.git /tmp/sjasmplus && \
+# Build SjASMPlus from source (with submodules for dependencies)
+RUN git clone --recursive https://github.com/z00m128/sjasmplus.git /tmp/sjasmplus && \
     cd /tmp/sjasmplus && \
     make && \
     cp sjasmplus /usr/local/bin/ && \
