@@ -1,20 +1,18 @@
+# ACME Cross-Assembler for Commodore 64
 FROM ubuntu:24.04
 
-LABEL maintainer="Code Like It's 198x"
-LABEL description="Commodore 64 development environment with ACME assembler"
+LABEL maintainer="code198x"
+LABEL description="ACME assembler for Commodore 64 development"
+LABEL version="1.0.0"
 
-# Avoid interactive prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Install dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
-    wget \
-    make \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Build and install ACME
+# Build ACME from source
 RUN git clone https://github.com/meonwax/acme.git /tmp/acme && \
     cd /tmp/acme/src && \
     make && \
@@ -24,12 +22,8 @@ RUN git clone https://github.com/meonwax/acme.git /tmp/acme && \
 # Create workspace directory
 WORKDIR /workspace
 
-# Add helper scripts
-COPY scripts/build.sh /usr/local/bin/build-c64
-RUN chmod +x /usr/local/bin/build-c64
+# Set ACME as the entrypoint
+ENTRYPOINT ["acme"]
 
-# Set up example Makefile template
-COPY templates/Makefile.c64 /usr/local/share/templates/Makefile
-
-# Default command
-CMD ["/bin/bash"]
+# Default command shows help
+CMD ["--help"]

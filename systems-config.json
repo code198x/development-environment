@@ -1,0 +1,102 @@
+{
+  "systems": [
+    {
+      "id": "commodore-64",
+      "name": "Commodore 64",
+      "assembler": "acme",
+      "assembler_name": "ACME",
+      "test_command": "-o test.prg test.asm",
+      "test_output": "test.prg",
+      "verify_command": "-o verify.prg test.asm",
+      "verify_output": "verify.prg",
+      "file_extension": ".prg",
+      "description": "6502 assembly for the world's best-selling computer"
+    },
+    {
+      "id": "sinclair-zx-spectrum",
+      "name": "ZX Spectrum",
+      "assembler": "sjasmplus",
+      "assembler_name": "SjASMPlus",
+      "test_command": "test.asm",
+      "test_output": "test.tap",
+      "verify_command": "test.asm",
+      "verify_output": "test.tap",
+      "file_extension": ".tap",
+      "description": "Z80 assembly for the UK's favorite 8-bit micro"
+    },
+    {
+      "id": "nintendo-entertainment-system",
+      "name": "Nintendo Entertainment System",
+      "assembler": "cc65",
+      "assembler_name": "cc65",
+      "test_command": "test.asm -o test.o",
+      "test_output": "test.o",
+      "verify_command": "test.asm -o verify.o",
+      "verify_output": "verify.o",
+      "file_extension": ".nes",
+      "description": "6502 assembly for the console that saved gaming"
+    },
+    {
+      "id": "commodore-amiga",
+      "name": "Commodore Amiga",
+      "assembler": "vasm",
+      "assembler_name": "VASM",
+      "test_command": "-Fhunkexe -o test test.asm",
+      "test_output": "test",
+      "verify_command": "-Fhunkexe -o verify test.asm",
+      "verify_output": "verify",
+      "file_extension": "",
+      "description": "68000 assembly for the multimedia powerhouse"
+    }
+  ],
+  "future_systems": [
+    {
+      "id": "apple-ii",
+      "name": "Apple II",
+      "assembler": "ca65",
+      "description": "6502 assembly for Wozniak's masterpiece"
+    },
+    {
+      "id": "atari-2600",
+      "name": "Atari 2600",
+      "assembler": "dasm",
+      "description": "6507 assembly for the VCS"
+    },
+    {
+      "id": "bbc-micro",
+      "name": "BBC Micro",
+      "assembler": "beebasm",
+      "description": "6502 assembly for the BBC's educational computer"
+    },
+    {
+      "id": "amstrad-cpc",
+      "name": "Amstrad CPC",
+      "assembler": "rasm",
+      "description": "Z80 assembly for the colorful CPC series"
+    },
+    {
+      "id": "sega-master-system",
+      "name": "Sega Master System",
+      "assembler": "wla-dx",
+      "description": "Z80 assembly for Sega's 8-bit console"
+    },
+    {
+      "id": "game-boy",
+      "name": "Game Boy",
+      "assembler": "rgbds",
+      "description": "Z80-like assembly for Nintendo's handheld"
+    },
+    {
+      "id": "atari-800",
+      "name": "Atari 800",
+      "assembler": "mads",
+      "description": "6502 assembly for Atari's 8-bit computers"
+    },
+    {
+      "id": "atari-st",
+      "name": "Atari ST",
+      "assembler": "vasm",
+      "description": "68000 assembly for the ST series"
+    }
+  ]
+}

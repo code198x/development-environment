@@ -1,7 +1,12 @@
 # Code198x Development Environment
-## Docker-Based Cross-Development for 16 Retro Platforms
 
-Complete development environment providing authentic cross-development tools for all supported retro computing platforms.
+Docker-based assembler toolchain for retro game development across classic 8-bit and 16-bit systems.
+
+![Build Status](https://github.com/code198x/development-environment/actions/workflows/docker-build.yml/badge.svg)
+
+## 🎮 Matrix-Based System Support
+
+All systems are configured through `systems-config.json`, enabling consistent builds across the entire toolchain. Adding a new system automatically updates CI/CD pipelines, documentation, and verification scripts.
 
 ## 🎯 Quick Start
 
