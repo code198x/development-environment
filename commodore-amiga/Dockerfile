@@ -1,15 +1,12 @@
 # VASM for Commodore Amiga
-FROM ubuntu:24.04
+FROM code198x/68000-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="VASM assembler for Commodore Amiga development"
 LABEL version="1.0.0"
+LABEL system="commodore-amiga"
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+USER root
 
 # Download and build VASM
 # Note: Using multiple mirror URLs for reliability
@@ -25,12 +22,11 @@ RUN for url in \
     tar -xzf vasm.tar.gz && \
     cd vasm* && \
     make CPU=m68k SYNTAX=mot && \
-    cp vasmm68k_mot /usr/local/bin/ && \
-    cp vobjdump /usr/local/bin/ 2>/dev/null || true && \
+    cp vasmm68k_mot /opt/68000-tools/bin/ && \
+    cp vobjdump /opt/68000-tools/bin/ 2>/dev/null || true && \
     rm -rf /tmp/vasm*
 
-# Create workspace directory
-WORKDIR /workspace
+USER retro
 
 # Set vasm as the entrypoint
 ENTRYPOINT ["vasmm68k_mot"]
