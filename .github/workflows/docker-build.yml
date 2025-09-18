@@ -7,11 +7,13 @@ on:
       - '*/Dockerfile'
       - '*.asm'
       - '.github/workflows/docker-build.yml'
+      - 'base-images/*/Dockerfile'
   pull_request:
     branches: [main]
     paths:
       - '*/Dockerfile'
       - '*.asm'
+      - 'base-images/*/Dockerfile'
   workflow_dispatch:
   schedule:
     # Weekly builds to keep images fresh
@@ -27,9 +29,15 @@ permissions:
   actions: read
 
 jobs:
+  build-base-images:
+    name: Build Base Images
+    uses: ./.github/workflows/build-base-images.yml
+    secrets: inherit
+
   build-matrix:
     name: Build ${{ matrix.system }}
     runs-on: ubuntu-latest
+    needs: build-base-images
     strategy:
       fail-fast: false
       matrix:

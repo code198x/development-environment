@@ -1,10 +1,37 @@
 {
+  "base_images": {
+    "retro-base": {
+      "name": "Common Retro Base",
+      "description": "Base image with common build tools and utilities",
+      "dockerfile_path": "base-images/retro-base"
+    },
+    "6502-base": {
+      "name": "6502 Family Base",
+      "description": "Base image for 6502-family processors",
+      "dockerfile_path": "base-images/6502-base",
+      "parent": "retro-base"
+    },
+    "z80-base": {
+      "name": "Z80 Family Base",
+      "description": "Base image for Z80-family processors",
+      "dockerfile_path": "base-images/z80-base",
+      "parent": "retro-base"
+    },
+    "68000-base": {
+      "name": "68000 Family Base",
+      "description": "Base image for 68000-family processors",
+      "dockerfile_path": "base-images/68000-base",
+      "parent": "retro-base"
+    }
+  },
   "systems": [
     {
       "id": "commodore-64",
       "name": "Commodore 64",
       "assembler": "acme",
       "assembler_name": "ACME",
+      "base_image": "6502-base",
+      "architecture": "6502",
       "test_command": "-o test.prg test.asm",
       "test_output": "test.prg",
       "verify_command": "-o verify.prg test.asm",
@@ -17,6 +44,8 @@
       "name": "ZX Spectrum",
       "assembler": "sjasmplus",
       "assembler_name": "SjASMPlus",
+      "base_image": "z80-base",
+      "architecture": "z80",
       "test_command": "test.asm",
       "test_output": "test.tap",
       "verify_command": "test.asm",
@@ -29,6 +58,8 @@
       "name": "Nintendo Entertainment System",
       "assembler": "cc65",
       "assembler_name": "cc65",
+      "base_image": "6502-base",
+      "architecture": "6502",
       "test_command": "test.asm -o test.o",
       "test_output": "test.o",
       "verify_command": "test.asm -o verify.o",
@@ -41,6 +72,8 @@
       "name": "Commodore Amiga",
       "assembler": "vasm",
       "assembler_name": "VASM",
+      "base_image": "68000-base",
+      "architecture": "68000",
       "test_command": "-Fhunkexe -o test test.asm",
       "test_output": "test",
       "verify_command": "-Fhunkexe -o verify test.asm",
@@ -54,48 +87,64 @@
       "id": "apple-ii",
       "name": "Apple II",
       "assembler": "ca65",
+      "base_image": "6502-base",
+      "architecture": "6502",
       "description": "6502 assembly for Wozniak's masterpiece"
     },
     {
       "id": "atari-2600",
       "name": "Atari 2600",
       "assembler": "dasm",
+      "base_image": "6502-base",
+      "architecture": "6507",
       "description": "6507 assembly for the VCS"
     },
     {
       "id": "bbc-micro",
       "name": "BBC Micro",
       "assembler": "beebasm",
+      "base_image": "6502-base",
+      "architecture": "6502",
       "description": "6502 assembly for the BBC's educational computer"
     },
     {
       "id": "amstrad-cpc",
       "name": "Amstrad CPC",
       "assembler": "rasm",
+      "base_image": "z80-base",
+      "architecture": "z80",
       "description": "Z80 assembly for the colorful CPC series"
     },
     {
       "id": "sega-master-system",
       "name": "Sega Master System",
       "assembler": "wla-dx",
+      "base_image": "z80-base",
+      "architecture": "z80",
       "description": "Z80 assembly for Sega's 8-bit console"
     },
     {
       "id": "game-boy",
       "name": "Game Boy",
       "assembler": "rgbds",
+      "base_image": "z80-base",
+      "architecture": "lr35902",
       "description": "Z80-like assembly for Nintendo's handheld"
     },
     {
       "id": "atari-800",
       "name": "Atari 800",
       "assembler": "mads",
+      "base_image": "6502-base",
+      "architecture": "6502",
       "description": "6502 assembly for Atari's 8-bit computers"
     },
     {
       "id": "atari-st",
       "name": "Atari ST",
       "assembler": "vasm",
+      "base_image": "68000-base",
+      "architecture": "68000",
       "description": "68000 assembly for the ST series"
     }
   ]

@@ -94,6 +94,17 @@ The entire system is configured through `systems-config.json`. Adding a new plat
 
 3. The CI/CD pipeline automatically adapts to include the new system
 
+## 🏗️ Base Image Architecture
+
+To reduce duplication and improve build efficiency, the system uses layered base images organized by processor architecture:
+
+- **retro-base**: Common Ubuntu 24.04 foundation with build tools
+- **6502-base**: For Commodore 64, NES, Apple II, Atari 2600, etc.
+- **z80-base**: For ZX Spectrum, Amstrad CPC, Game Boy, etc.
+- **68000-base**: For Amiga, Atari ST, etc.
+
+See [BASE_IMAGES.md](BASE_IMAGES.md) for detailed architecture documentation.
+
 ## 🧪 Testing
 
 Each system includes a test file:
