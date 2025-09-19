@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     # Additional tools often needed
     xxd \
-    hexdump \
+    bsdmainutils \
     && rm -rf /var/lib/apt/lists/*
 
 # Create common directories for 6502 development
