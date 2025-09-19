@@ -1,0 +1,136 @@
+name: Build Processor Family
+
+on:
+  workflow_call:
+    inputs:
+      processor:
+        required: true
+        type: string
+        description: 'Processor architecture (6502, z80, 68000)'
+      systems:
+        required: true
+        type: string
+        description: 'JSON array of system names to build'
+    secrets:
+      DOCKER_USERNAME:
+        required: false
+      DOCKER_TOKEN:
+        required: false
+
+env:
+  DOCKER_ORG: code198x
+  GHCR_ORG: ghcr.io/code198x
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+jobs:
+  build-chain:
+    name: Build ${{ inputs.processor }} chain
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        system: ${{ fromJson(inputs.systems) }}
+      max-parallel: 4
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Check for Docker Hub credentials
+        id: check-docker-creds
+        run: |
+          if [ -n "${{ secrets.DOCKER_USERNAME }}" ] && [ -n "${{ secrets.DOCKER_TOKEN }}" ]; then
+            echo "has-creds=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-creds=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Log in to Docker Hub
+        if: steps.check-docker-creds.outputs.has-creds == 'true'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # First, ensure the processor base image is built
+      - name: Build ${{ inputs.processor }}-base
+        if: matrix.system == fromJson(inputs.systems)[0]  # Only build once
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/${{ inputs.processor }}-base
+          file: ./base-images/${{ inputs.processor }}-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.GHCR_ORG }}/${{ inputs.processor }}-base:latest
+            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/{1}-base:latest', env.DOCKER_ORG, inputs.processor) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Then build the system image
+      - name: Wait for base image
+        if: matrix.system != fromJson(inputs.systems)[0]
+        run: |
+          echo "Waiting for ${{ inputs.processor }}-base to be available..."
+          for i in {1..30}; do
+            if docker pull ${{ env.GHCR_ORG }}/${{ inputs.processor }}-base:latest 2>/dev/null; then
+              echo "Base image is ready!"
+              break
+            fi
+            echo "Attempt $i/30: Base image not ready yet..."
+            sleep 10
+          done
+
+      - name: Build ${{ matrix.system }}
+        uses: docker/build-push-action@v5
+        with:
+          context: ./systems/${{ matrix.system }}
+          file: ./systems/${{ matrix.system }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.GHCR_ORG }}/${{ matrix.system }}:latest
+            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/{1}:latest', env.DOCKER_ORG, matrix.system) || '' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Test the system image
+      - name: Test ${{ matrix.system }} image
+        run: |
+          echo "🔍 Testing ${{ matrix.system }} image..."
+          docker run --rm ${{ env.GHCR_ORG }}/${{ matrix.system }}:latest --help || \
+          docker run --rm ${{ env.GHCR_ORG }}/${{ matrix.system }}:latest --version || \
+          docker run --rm ${{ env.GHCR_ORG }}/${{ matrix.system }}:latest -h || \
+          echo "ℹ️ No help command available"
+
+      # Security scanning
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.GHCR_ORG }}/${{ matrix.system }}:latest'
+          format: 'sarif'
+          output: 'trivy-${{ matrix.system }}.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-${{ matrix.system }}.sarif'
+          category: 'trivy-${{ matrix.system }}'
