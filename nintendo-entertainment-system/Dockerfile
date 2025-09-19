@@ -8,22 +8,18 @@ LABEL system="nintendo-entertainment-system"
 
 USER root
 
-# Build cc65 from source
-RUN mkdir -p /opt/6502-tools && \
-    git clone https://github.com/cc65/cc65.git /tmp/cc65 && \
-    cd /tmp/cc65 && \
-    make && \
-    make install PREFIX=/opt/6502-tools && \
-    rm -rf /tmp/cc65
+# cc65 is now included in the base image
+# This image adds NES-specific configuration
 
 # Copy NES configuration file
+RUN mkdir -p /opt/6502-tools/share/cc65/cfg/
 COPY nes.cfg /opt/6502-tools/share/cc65/cfg/
 
 # Create wrapper script for easier usage
 RUN echo '#!/bin/bash\nif [ "$1" = "build" ]; then\n  ca65 main.asm -o main.o && ld65 main.o -C /opt/6502-tools/share/cc65/cfg/nes.cfg -o program.nes\nelse\n  ca65 "$@"\nfi' > /opt/6502-tools/bin/nes-build && \
     chmod +x /opt/6502-tools/bin/nes-build
 
-USER retro
+USER code198x
 
 # Set ca65 as the entrypoint
 ENTRYPOINT ["ca65"]

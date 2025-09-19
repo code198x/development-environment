@@ -6,17 +6,10 @@ LABEL description="ACME assembler for Commodore 64 development"
 LABEL version="1.0.0"
 LABEL system="commodore-64"
 
-USER root
+# ACME assembler is now included in the base image
+# This image just provides C64-specific configuration
 
-# Build ACME from source
-RUN mkdir -p /opt/6502-tools/bin && \
-    git clone https://github.com/meonwax/acme.git /tmp/acme && \
-    cd /tmp/acme/src && \
-    make && \
-    cp acme /opt/6502-tools/bin/ && \
-    rm -rf /tmp/acme
-
-USER retro
+USER code198x
 
 # Set ACME as the entrypoint
 ENTRYPOINT ["acme"]

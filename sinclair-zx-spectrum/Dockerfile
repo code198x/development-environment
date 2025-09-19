@@ -6,22 +6,10 @@ LABEL description="SjASMPlus assembler for ZX Spectrum development"
 LABEL version="1.0.0"
 LABEL system="sinclair-zx-spectrum"
 
-USER root
+# sjasmplus is now included in the base image
+# This image provides ZX Spectrum specific configuration
 
-# Install additional dependencies for SjASMPlus
-RUN apt-get update && apt-get install -y \
-    cmake \
-    && rm -rf /var/lib/apt/lists/*
-
-# Build SjASMPlus from source (with submodules for dependencies)
-RUN mkdir -p /opt/z80-tools/bin && \
-    git clone --recursive https://github.com/z00m128/sjasmplus.git /tmp/sjasmplus && \
-    cd /tmp/sjasmplus && \
-    make && \
-    cp sjasmplus /opt/z80-tools/bin/ && \
-    rm -rf /tmp/sjasmplus
-
-USER retro
+USER code198x
 
 # Set sjasmplus as the entrypoint
 ENTRYPOINT ["sjasmplus"]

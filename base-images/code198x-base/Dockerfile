@@ -1,9 +1,9 @@
-# Base image for all retro development environments
+# Base image for all Code Like It's 198x development environments
 # Provides common build tools and utilities
 FROM ubuntu:24.04
 
 LABEL maintainer="code198x"
-LABEL description="Base image for retro assembly development"
+LABEL description="Base image for Code Like It's 198x retro assembly development"
 LABEL version="1.0.0"
 
 # Set environment variables
@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR $WORKSPACE
 
 # Set up common environment
-RUN useradd -m -s /bin/bash retro && \
-    chown -R retro:retro $WORKSPACE
+RUN useradd -m -s /bin/bash code198x && \
+    chown -R code198x:code198x $WORKSPACE
 
-USER retro
+USER code198x

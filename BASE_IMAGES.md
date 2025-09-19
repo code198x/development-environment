@@ -1,6 +1,6 @@
 # Base Images Architecture
 
-The Code198x development environment uses a layered base image approach to reduce duplication, improve build efficiency, and maintain consistency across related processor architectures.
+The Code Like It's 198x development environment uses a layered base image approach to reduce duplication, improve build efficiency, and maintain consistency across related processor architectures.
 
 ## Architecture Overview
 

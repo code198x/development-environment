@@ -1,4 +1,4 @@
-# Code198x Development Environment
+# Code Like It's 198x Development Environment
 
 Docker-based assembler toolchain for retro game development across classic 8-bit and 16-bit systems.
 
@@ -160,7 +160,7 @@ MIT License - See LICENSE file for details
 
 ## 🔗 Related Projects
 
-- [Code198x Website](https://code198x.stevehill.xyz) - Main educational platform
+- [Code Like It's 198x Website](https://code198x.stevehill.xyz) - Main educational platform
 - [Code Samples](https://github.com/code198x/code-samples) - Example code for lessons
 
 ---

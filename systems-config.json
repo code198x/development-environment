@@ -1,27 +1,27 @@
 {
   "base_images": {
-    "retro-base": {
+    "code198x-base": {
       "name": "Common Retro Base",
       "description": "Base image with common build tools and utilities",
-      "dockerfile_path": "base-images/retro-base"
+      "dockerfile_path": "base-images/code198x-base"
     },
     "6502-base": {
       "name": "6502 Family Base",
       "description": "Base image for 6502-family processors",
       "dockerfile_path": "base-images/6502-base",
-      "parent": "retro-base"
+      "parent": "code198x-base"
     },
     "z80-base": {
       "name": "Z80 Family Base",
       "description": "Base image for Z80-family processors",
       "dockerfile_path": "base-images/z80-base",
-      "parent": "retro-base"
+      "parent": "code198x-base"
     },
     "68000-base": {
       "name": "68000 Family Base",
       "description": "Base image for 68000-family processors",
       "dockerfile_path": "base-images/68000-base",
-      "parent": "retro-base"
+      "parent": "code198x-base"
     }
   },
   "systems": [

@@ -28,8 +28,8 @@ permissions:
   actions: read
 
 jobs:
-  build-retro-base:
-    name: Build retro-base
+  build-code198x-base:
+    name: Build code198x-base
     runs-on: ubuntu-latest
 
     steps:
@@ -72,8 +72,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ env.GHCR_ORG }}/retro-base
-            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/retro-base', env.DOCKER_ORG) || '' }}
+            ${{ env.GHCR_ORG }}/code198x-base
+            ${{ steps.check-docker-creds.outputs.has-creds == 'true' && format('{0}/code198x-base', env.DOCKER_ORG) || '' }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
@@ -81,11 +81,11 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value={{date 'YYYYMMDD'}},enable={{is_default_branch}}
 
-      - name: Build and push retro-base
+      - name: Build and push code198x-base
         uses: docker/build-push-action@v5
         with:
-          context: ./base-images/retro-base
-          file: ./base-images/retro-base/Dockerfile
+          context: ./base-images/code198x-base
+          file: ./base-images/code198x-base/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -96,7 +96,7 @@ jobs:
   build-arch-bases:
     name: Build ${{ matrix.base-image }}
     runs-on: ubuntu-latest
-    needs: build-retro-base
+    needs: build-code198x-base
     strategy:
       fail-fast: false
       matrix:
@@ -175,7 +175,7 @@ jobs:
   output-results:
     name: Output Build Results
     runs-on: ubuntu-latest
-    needs: [build-retro-base, build-arch-bases]
+    needs: [build-code198x-base, build-arch-bases]
     outputs:
       built: "true"
 
@@ -184,7 +184,7 @@ jobs:
         run: |
           echo "✅ All base images built successfully!"
           echo "📦 Base images available:"
-          echo "  - ${{ env.GHCR_ORG }}/retro-base:latest"
+          echo "  - ${{ env.GHCR_ORG }}/code198x-base:latest"
           echo "  - ${{ env.GHCR_ORG }}/6502-base:latest"
           echo "  - ${{ env.GHCR_ORG }}/z80-base:latest"
           echo "  - ${{ env.GHCR_ORG }}/68000-base:latest"
