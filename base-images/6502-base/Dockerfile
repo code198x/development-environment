@@ -1,5 +1,5 @@
 # Version pinning for reproducible builds (must be before FROM)
-ARG ACME_VERSION=0.97
+ARG ACME_BRANCH=main
 ARG CC65_VERSION=V2.19
 
 # Base image for 6502-family processors
@@ -17,14 +17,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Re-declare ARGs for this stage
-ARG ACME_VERSION
+ARG ACME_BRANCH
 ARG CC65_VERSION
 
 # Build ACME cross-assembler
 RUN cd /tmp && \
-    wget -q https://github.com/meonwax/acme/archive/refs/tags/v${ACME_VERSION}.tar.gz && \
-    tar -xzf v${ACME_VERSION}.tar.gz && \
-    cd acme-${ACME_VERSION}/src && \
+    wget -q https://github.com/meonwax/acme/archive/refs/heads/${ACME_BRANCH}.tar.gz && \
+    tar -xzf ${ACME_BRANCH}.tar.gz && \
+    cd acme-${ACME_BRANCH}/src && \
     make && \
     mkdir -p /opt/6502-tools/bin && \
     cp acme /opt/6502-tools/bin/
