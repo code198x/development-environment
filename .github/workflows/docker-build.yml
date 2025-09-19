@@ -137,8 +137,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.system }}
-          file: ./${{ matrix.system }}/Dockerfile
+          context: ./systems/${{ matrix.system }}
+          file: ./systems/${{ matrix.system }}/Dockerfile
           platforms: linux/amd64
           push: false
           tags: test-${{ matrix.system }}:latest
@@ -171,15 +171,15 @@ jobs:
           echo "🧪 Testing ${{ matrix.assembler }} assembler with real code..."
 
           # Run the assembler on real test program
-          docker run --rm -v $(pwd)/${{ matrix.system }}:/workspace test-${{ matrix.system }}:latest ${{ matrix.test-command }}
+          docker run --rm -v $(pwd)/systems/${{ matrix.system }}:/workspace test-${{ matrix.system }}:latest ${{ matrix.test-command }}
 
           # Check if output was created
-          if [ -f "${{ matrix.system }}/${{ matrix.test-output }}" ]; then
+          if [ -f "systems/${{ matrix.system }}/${{ matrix.test-output }}" ]; then
             echo "✅ ${{ matrix.assembler }} test passed - binary created"
-            ls -la ${{ matrix.system }}/${{ matrix.test-output }}
+            ls -la systems/${{ matrix.system }}/${{ matrix.test-output }}
 
             # Verify binary is not empty and has reasonable size
-            size=$(stat -c%s "${{ matrix.system }}/${{ matrix.test-output }}")
+            size=$(stat -c%s "systems/${{ matrix.system }}/${{ matrix.test-output }}")
             if [ "$size" -gt 0 ] && [ "$size" -lt 1048576 ]; then
               echo "✅ Binary size check passed: ${size} bytes"
             else
@@ -215,8 +215,8 @@ jobs:
         if: github.event_name != 'pull_request' && steps.check-docker-creds.outputs.has-creds == 'true'
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.system }}
-          file: ./${{ matrix.system }}/Dockerfile
+          context: ./systems/${{ matrix.system }}
+          file: ./systems/${{ matrix.system }}/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta-docker.outputs.tags }}
@@ -228,8 +228,8 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v5
         with:
-          context: ./${{ matrix.system }}
-          file: ./${{ matrix.system }}/Dockerfile
+          context: ./systems/${{ matrix.system }}
+          file: ./systems/${{ matrix.system }}/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta-ghcr.outputs.tags }}
@@ -267,10 +267,10 @@ jobs:
         run: |
           echo "🔍 Testing code198x/${{ matrix.system }}..."
           docker pull ${{ env.DOCKER_ORG }}/${{ matrix.system }}:latest
-          docker run --rm -v $(pwd)/${{ matrix.system }}:/workspace ${{ env.DOCKER_ORG }}/${{ matrix.system }}:latest ${{ matrix.test-command }}
-          if [ -f "${{ matrix.system }}/${{ matrix.test-output }}" ]; then
+          docker run --rm -v $(pwd)/systems/${{ matrix.system }}:/workspace ${{ env.DOCKER_ORG }}/${{ matrix.system }}:latest ${{ matrix.test-command }}
+          if [ -f "systems/${{ matrix.system }}/${{ matrix.test-output }}" ]; then
             echo "✅ ${{ matrix.system }} verified successfully"
-            ls -la ${{ matrix.system }}/${{ matrix.test-output }}
+            ls -la systems/${{ matrix.system }}/${{ matrix.test-output }}
           else
             echo "❌ ${{ matrix.system }} verification failed"
             exit 1

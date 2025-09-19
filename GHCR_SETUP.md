@@ -38,7 +38,7 @@ Sometimes GitHub requires packages to exist before Actions can push to them:
 echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_USERNAME --password-stdin
 
 # Build an image
-docker build -t ghcr.io/code198x/commodore-64:latest commodore-64/
+docker build -t ghcr.io/code198x/commodore-64:latest systems/commodore-64/
 
 # Push it (this creates the package)
 docker push ghcr.io/code198x/commodore-64:latest

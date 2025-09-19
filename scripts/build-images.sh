@@ -39,7 +39,7 @@ failed_builds=()
 
 # Build each system's Docker image
 for system in "${systems[@]}"; do
-    dockerfile="$SCRIPT_DIR/../$system/Dockerfile"
+    dockerfile="$SCRIPT_DIR/../systems/$system/Dockerfile"
     tag="$DOCKER_ORG/$system:latest"
 
     echo -e "${YELLOW}Building $system...${NC}"
@@ -51,7 +51,7 @@ for system in "${systems[@]}"; do
     fi
 
     # Build the image
-    if docker build -f "$dockerfile" -t "$tag" "$SCRIPT_DIR/../$system" 2>&1 | tail -5; then
+    if docker build -f "$dockerfile" -t "$tag" "$SCRIPT_DIR/../systems/$system" 2>&1 | tail -5; then
         echo -e "${GREEN}  ✓ Successfully built $tag${NC}"
         successful_builds+=("$system")
 

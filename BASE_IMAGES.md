@@ -5,27 +5,30 @@ The Code Like It's 198x development environment uses a layered base image approa
 ## Architecture Overview
 
 ```
-retro-base (Ubuntu 24.04 + common tools)
+code198x-base (Ubuntu 24.04 + common tools)
 ├── 6502-base (6502 family tools)
-│   ├── commodore-64 (ACME)
-│   ├── nintendo-entertainment-system (cc65)
-│   ├── apple-ii (ca65)
-│   ├── atari-2600 (dasm)
-│   ├── bbc-micro (beebasm)
-│   └── atari-800 (mads)
+│   └── systems/
+│       ├── commodore-64 (ACME)
+│       ├── nintendo-entertainment-system (cc65)
+│       ├── apple-ii (ca65)
+│       ├── atari-2600 (dasm)
+│       ├── bbc-micro (beebasm)
+│       └── atari-800 (mads)
 ├── z80-base (Z80 family tools)
-│   ├── sinclair-zx-spectrum (SjASMPlus)
-│   ├── amstrad-cpc (rasm)
-│   ├── sega-master-system (wla-dx)
-│   └── game-boy (rgbds)
+│   └── systems/
+│       ├── sinclair-zx-spectrum (SjASMPlus)
+│       ├── amstrad-cpc (rasm)
+│       ├── sega-master-system (wla-dx)
+│       └── game-boy (rgbds)
 └── 68000-base (68000 family tools)
-    ├── commodore-amiga (VASM)
-    └── atari-st (VASM)
+    └── systems/
+        ├── commodore-amiga (VASM)
+        └── atari-st (VASM)
 ```
 
 ## Base Images
 
-### retro-base
+### code198x-base
 **Purpose**: Common foundation for all retro development environments
 **Contains**:
 - Ubuntu 24.04 LTS
