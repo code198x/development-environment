@@ -1,6 +1,4 @@
-# Version pinning for reproducible builds (must be before FROM)
-ARG VASM_COMMIT=e7bfb2e
-ARG VLINK_VERSION=0_17a
+# Using GitHub mirrors for reliable downloads (phoenix.owl.de unreliable)
 
 # Base image for 68000-family processors
 # Multi-stage build for smaller runtime image
@@ -16,25 +14,23 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Re-declare ARGs for this stage
-ARG VASM_COMMIT
-ARG VLINK_VERSION
+# No ARGs needed - using latest from GitHub mirrors
 
 # Build VASM from GitHub mirror (phoenix.owl.de unreliable)
 RUN cd /tmp && \
-    wget -q https://github.com/mist64/vasm/archive/${VASM_COMMIT}.tar.gz && \
-    tar -xzf ${VASM_COMMIT}.tar.gz && \
-    cd vasm-* && \
+    wget -q https://github.com/StarWolf3000/vasm-mirror/archive/main.tar.gz && \
+    tar -xzf main.tar.gz && \
+    cd vasm-mirror-* && \
     make CPU=m68k SYNTAX=mot && \
     mkdir -p /opt/68000-tools/bin && \
     cp vasmm68k_mot /opt/68000-tools/bin/ && \
     cp vobjdump /opt/68000-tools/bin/
 
-# Build vlink
+# Build vlink from GitHub mirror (phoenix.owl.de unreliable)
 RUN cd /tmp && \
-    wget -q http://phoenix.owl.de/tags/vlink${VLINK_VERSION}.tar.gz && \
-    tar -xzf vlink${VLINK_VERSION}.tar.gz && \
-    cd vlink && \
+    wget -q https://github.com/Leffmann/vlink/archive/main.tar.gz -O vlink.tar.gz && \
+    tar -xzf vlink.tar.gz && \
+    cd vlink-* && \
     make && \
     cp vlink /opt/68000-tools/bin/
 
