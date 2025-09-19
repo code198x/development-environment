@@ -18,6 +18,11 @@ on:
         description: "Whether base images were built"
         value: ${{ jobs.build-base-images.outputs.built }}
 
+# Cancel previous runs when new commits are pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   DOCKER_ORG: code198x
   GHCR_ORG: ghcr.io/code198x
