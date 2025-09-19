@@ -1,0 +1,445 @@
+name: Build Docker Images (Parallel Jobs)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'systems/*/Dockerfile'
+      - 'systems/*/*.asm'
+      - '.github/workflows/docker-build-parallel-jobs.yml'
+      - 'base-images/*/Dockerfile'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'systems/*/Dockerfile'
+      - 'systems/*/*.asm'
+      - 'base-images/*/Dockerfile'
+  workflow_dispatch:
+  schedule:
+    # Weekly builds to keep images fresh
+    - cron: '0 2 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKER_ORG: code198x
+  GHCR_ORG: ghcr.io/code198x
+
+permissions:
+  contents: read
+  packages: write
+  actions: read
+  security-events: write
+
+jobs:
+  # ============================================
+  # Stage 1: Build root base image
+  # ============================================
+  build-root-base:
+    name: code198x-base
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache.outputs.key }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push code198x-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/code198x-base
+          file: ./base-images/code198x-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/code198x-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Generate cache key
+        id: cache
+        run: echo "key=${{ runner.os }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+  # ============================================
+  # Stage 2: Build processor base images in parallel
+  # ============================================
+  build-6502-base:
+    name: 6502-base
+    runs-on: ubuntu-latest
+    needs: build-root-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push 6502-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/6502-base
+          file: ./base-images/6502-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/6502-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-z80-base:
+    name: z80-base
+    runs-on: ubuntu-latest
+    needs: build-root-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push z80-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/z80-base
+          file: ./base-images/z80-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/z80-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-68000-base:
+    name: 68000-base
+    runs-on: ubuntu-latest
+    needs: build-root-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push 68000-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/68000-base
+          file: ./base-images/68000-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/68000-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================
+  # Stage 3: Build system images in parallel
+  # Each system is a separate job for maximum parallelization
+  # ============================================
+
+  # 6502 Family Systems
+  build-commodore-64:
+    name: Commodore 64
+    runs-on: ubuntu-latest
+    needs: build-6502-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Commodore 64
+        uses: docker/build-push-action@v5
+        with:
+          context: ./systems/commodore-64
+          file: ./systems/commodore-64/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/commodore-64:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Commodore 64 image
+        run: |
+          docker run --rm ${{ env.GHCR_ORG }}/commodore-64:latest --help || true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.GHCR_ORG }}/commodore-64:latest'
+          format: 'sarif'
+          output: 'trivy-commodore-64.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-commodore-64.sarif'
+          category: 'trivy-commodore-64'
+
+  build-nintendo-entertainment-system:
+    name: Nintendo NES
+    runs-on: ubuntu-latest
+    needs: build-6502-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Nintendo Entertainment System
+        uses: docker/build-push-action@v5
+        with:
+          context: ./systems/nintendo-entertainment-system
+          file: ./systems/nintendo-entertainment-system/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/nintendo-entertainment-system:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test NES image
+        run: |
+          docker run --rm ${{ env.GHCR_ORG }}/nintendo-entertainment-system:latest --version || true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.GHCR_ORG }}/nintendo-entertainment-system:latest'
+          format: 'sarif'
+          output: 'trivy-nes.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-nes.sarif'
+          category: 'trivy-nes'
+
+  # Z80 Family Systems
+  build-sinclair-zx-spectrum:
+    name: ZX Spectrum
+    runs-on: ubuntu-latest
+    needs: build-z80-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Sinclair ZX Spectrum
+        uses: docker/build-push-action@v5
+        with:
+          context: ./systems/sinclair-zx-spectrum
+          file: ./systems/sinclair-zx-spectrum/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/sinclair-zx-spectrum:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test ZX Spectrum image
+        run: |
+          docker run --rm ${{ env.GHCR_ORG }}/sinclair-zx-spectrum:latest --help || true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.GHCR_ORG }}/sinclair-zx-spectrum:latest'
+          format: 'sarif'
+          output: 'trivy-spectrum.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-spectrum.sarif'
+          category: 'trivy-spectrum'
+
+  # 68000 Family Systems
+  build-commodore-amiga:
+    name: Commodore Amiga
+    runs-on: ubuntu-latest
+    needs: build-68000-base
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Commodore Amiga
+        uses: docker/build-push-action@v5
+        with:
+          context: ./systems/commodore-amiga
+          file: ./systems/commodore-amiga/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/commodore-amiga:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Amiga image
+        run: |
+          docker run --rm ${{ env.GHCR_ORG }}/commodore-amiga:latest -help || true
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.GHCR_ORG }}/commodore-amiga:latest'
+          format: 'sarif'
+          output: 'trivy-amiga.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-amiga.sarif'
+          category: 'trivy-amiga'
+
+  # ============================================
+  # Stage 4: Summary
+  # ============================================
+  summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [
+      build-commodore-64,
+      build-nintendo-entertainment-system,
+      build-sinclair-zx-spectrum,
+      build-commodore-amiga
+    ]
+
+    steps:
+      - name: Generate Summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          # 🚀 Docker Build Summary
+
+          ## System Build Status
+
+          | System | Processor | Status |
+          |--------|-----------|--------|
+          | Commodore 64 | 6502 | ${{ needs.build-commodore-64.result == 'success' && '✅ Success' || needs.build-commodore-64.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |
+          | Nintendo NES | 6502 | ${{ needs.build-nintendo-entertainment-system.result == 'success' && '✅ Success' || needs.build-nintendo-entertainment-system.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |
+          | ZX Spectrum | Z80 | ${{ needs.build-sinclair-zx-spectrum.result == 'success' && '✅ Success' || needs.build-sinclair-zx-spectrum.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |
+          | Commodore Amiga | 68000 | ${{ needs.build-commodore-amiga.result == 'success' && '✅ Success' || needs.build-commodore-amiga.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }} |
+
+          ## Parallelization Benefits
+
+          With separate jobs per system:
+          - **Maximum parallelization**: All systems in a processor family build simultaneously
+          - **Independent failures**: C64 failure doesn't block NES
+          - **Clear visibility**: Each system shows as separate GitHub check
+          - **Efficient caching**: Each job has its own cache scope
+
+          ## Available Images
+
+          All images are available at:
+          - `ghcr.io/code198x/[image-name]:latest`
+
+          ### Base Images
+          - `code198x-base` - Common foundation
+          - `6502-base` - 6502 processor family
+          - `z80-base` - Z80 processor family
+          - `68000-base` - 68000 processor family
+
+          ### System Images
+          - `commodore-64` - C64 with ACME assembler
+          - `nintendo-entertainment-system` - NES with cc65
+          - `sinclair-zx-spectrum` - Spectrum with SjASMPlus
+          - `commodore-amiga` - Amiga with VASM
+          EOF

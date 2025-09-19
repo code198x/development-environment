@@ -1,0 +1,313 @@
+name: Build Docker Images (Modular)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'systems/*/Dockerfile'
+      - 'systems/*/*.asm'
+      - '.github/workflows/docker-build-modular.yml'
+      - '.github/workflows/build-system-image.yml'
+      - 'base-images/*/Dockerfile'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'systems/*/Dockerfile'
+      - 'systems/*/*.asm'
+      - 'base-images/*/Dockerfile'
+  workflow_dispatch:
+    inputs:
+      build-base-images:
+        description: 'Build base images'
+        required: false
+        default: true
+        type: boolean
+      build-systems:
+        description: 'Build system images'
+        required: false
+        default: true
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOCKER_ORG: code198x
+  GHCR_ORG: ghcr.io/code198x
+
+permissions:
+  contents: read
+  packages: write
+  actions: read
+  security-events: write
+
+jobs:
+  # ============================================
+  # Stage 1: Build root base image
+  # ============================================
+  build-root-base:
+    name: code198x-base
+    runs-on: ubuntu-latest
+    if: github.event.inputs.build-base-images != 'false'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push code198x-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/code198x-base
+          file: ./base-images/code198x-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/code198x-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================
+  # Stage 2: Build processor base images (parallel)
+  # ============================================
+  build-6502-base:
+    name: 6502-base
+    runs-on: ubuntu-latest
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push 6502-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/6502-base
+          file: ./base-images/6502-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/6502-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-z80-base:
+    name: z80-base
+    runs-on: ubuntu-latest
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push z80-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/z80-base
+          file: ./base-images/z80-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/z80-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-68000-base:
+    name: 68000-base
+    runs-on: ubuntu-latest
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push 68000-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/68000-base
+          file: ./base-images/68000-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/68000-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ============================================
+  # Stage 3: Build system images (parallel, separate jobs)
+  # Using reusable workflow for DRY principle
+  # ============================================
+
+  # 6502 Family
+  build-commodore-64:
+    name: C64
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: commodore-64
+      display-name: Commodore 64
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-nintendo-nes:
+    name: NES
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: nintendo-entertainment-system
+      display-name: Nintendo NES
+      test-command: --version
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # Z80 Family
+  build-zx-spectrum:
+    name: Spectrum
+    needs: build-z80-base
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: sinclair-zx-spectrum
+      display-name: ZX Spectrum
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # 68000 Family
+  build-commodore-amiga:
+    name: Amiga
+    needs: build-68000-base
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: commodore-amiga
+      display-name: Commodore Amiga
+      test-command: -help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # ============================================
+  # Stage 4: Summary
+  # ============================================
+  summary:
+    name: Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [
+      build-commodore-64,
+      build-nintendo-nes,
+      build-zx-spectrum,
+      build-commodore-amiga
+    ]
+
+    steps:
+      - name: Check out code for system listing
+        uses: actions/checkout@v4
+
+      - name: Generate Summary
+        run: |
+          # Count systems by processor family
+          SYSTEMS_6502=$(ls -1 systems/ | grep -E "commodore-64|nintendo-entertainment-system|apple-ii|atari-2600" | wc -l || echo 0)
+          SYSTEMS_Z80=$(ls -1 systems/ | grep -E "sinclair-zx-spectrum|amstrad-cpc|sega-master-system" | wc -l || echo 0)
+          SYSTEMS_68000=$(ls -1 systems/ | grep -E "commodore-amiga|atari-st" | wc -l || echo 0)
+
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          # 🚀 Docker Build Summary
+
+          ## Build Results
+
+          | System | Family | Status |
+          |--------|--------|--------|
+          | Commodore 64 | 6502 | ${{ needs.build-commodore-64.result == 'success' && '✅' || needs.build-commodore-64.result == 'skipped' && '⏭️' || '❌' }} |
+          | Nintendo NES | 6502 | ${{ needs.build-nintendo-nes.result == 'success' && '✅' || needs.build-nintendo-nes.result == 'skipped' && '⏭️' || '❌' }} |
+          | ZX Spectrum | Z80 | ${{ needs.build-zx-spectrum.result == 'success' && '✅' || needs.build-zx-spectrum.result == 'skipped' && '⏭️' || '❌' }} |
+          | Commodore Amiga | 68000 | ${{ needs.build-commodore-amiga.result == 'success' && '✅' || needs.build-commodore-amiga.result == 'skipped' && '⏭️' || '❌' }} |
+
+          ## Architecture Benefits
+
+          This modular architecture provides:
+          - **🚀 Parallel Builds**: Each system builds as a separate job
+          - **🎯 Independent Failures**: One system failing doesn't block others
+          - **📊 Clear Visibility**: Each system shows as a separate GitHub check
+          - **♻️ Reusable Components**: DRY principle via reusable workflows
+          - **🔧 Easy Scaling**: Add new systems by adding one workflow call
+
+          ## Performance Metrics
+
+          | Metric | Sequential | Parallel | Improvement |
+          |--------|------------|----------|-------------|
+          | Total Jobs | 2 | 8 | 4x granularity |
+          | Max Parallelism | 2 | 7 | 3.5x |
+          | Failure Impact | Blocks all | Isolated | ✅ |
+          | GitHub UI | 2 checks | 8 checks | Better visibility |
+
+          ## Registry
+
+          All images available at `ghcr.io/code198x/[image-name]:latest`
+          EOF
+
+      - name: Set exit code
+        if: |
+          needs.build-commodore-64.result == 'failure' ||
+          needs.build-nintendo-nes.result == 'failure' ||
+          needs.build-zx-spectrum.result == 'failure' ||
+          needs.build-commodore-amiga.result == 'failure'
+        run: exit 1

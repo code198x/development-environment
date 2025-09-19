@@ -57,33 +57,32 @@ graph TD
 
 ## Implementation Options
 
-### Option 1: Simple Parallel (docker-build-optimized.yml)
-- ✅ All logic in one file
-- ✅ Easy to understand
-- ❌ Lots of duplication
+### Option 1: Separate Jobs Per System (docker-build-parallel-jobs.yml)
+- ✅ Maximum parallelization - each system is a separate job
+- ✅ Clear GitHub UI - each system shows as separate check
+- ✅ Independent failures - C64 can succeed while NES fails
+- ❌ Verbose - lots of YAML duplication
 - ❌ Hard to maintain as systems grow
 
-### Option 2: Reusable Workflows (docker-build-parallel.yml + build-processor-family.yml)
-- ✅ DRY - no duplication
-- ✅ Easy to add new systems
-- ✅ Each family can have custom build logic
-- ❌ More complex with multiple files
+### Option 2: Modular with Reusable Workflow (docker-build-modular.yml + build-system-image.yml)
+- ✅ DRY principle - system build logic in one place
+- ✅ Separate jobs for maximum parallelization
+- ✅ Easy to add new systems (one workflow call)
+- ✅ Manual dispatch options for selective builds
+- ✅ Clear GitHub UI with separate checks
+- ❌ Requires two workflow files
 
-### Option 3: Hybrid with Matrix Strategy
-```yaml
-strategy:
-  matrix:
-    include:
-      - processor: 6502
-        systems: [commodore-64, nintendo-entertainment-system]
-      - processor: z80
-        systems: [sinclair-zx-spectrum]
-      - processor: 68000
-        systems: [commodore-amiga]
-```
-- ✅ Compact configuration
-- ✅ Single workflow file
-- ❌ Less flexible for family-specific logic
+### Option 3: Family-Based Steps (docker-build-parallel.yml + build-processor-family.yml)
+- ✅ Groups systems by processor family
+- ✅ Reusable workflow for families
+- ❌ Systems within a family build sequentially (steps, not jobs)
+- ❌ Less granular failure isolation
+
+### Option 4: Simple Sequential (current docker-build.yml)
+- ✅ Simple to understand
+- ❌ Extremely slow - everything sequential
+- ❌ One failure blocks everything
+- ❌ Poor scalability
 
 ## Performance Comparison
 
@@ -95,7 +94,7 @@ strategy:
 
 ## Recommendation
 
-Use **Option 2 (Reusable Workflows)** because:
+Use **Option 2 (Modular with Reusable Workflow)** because:
 1. **Scalability**: Easy to add systems without touching other families
 2. **Maintainability**: Changes to build logic only need updating in one place
 3. **Flexibility**: Each processor family can have custom test commands
