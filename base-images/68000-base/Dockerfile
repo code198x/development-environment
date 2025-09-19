@@ -21,7 +21,7 @@ RUN cd /tmp && \
     wget -q https://github.com/StarWolf3000/vasm-mirror/archive/main.tar.gz && \
     tar -xzf main.tar.gz && \
     cd vasm-mirror-* && \
-    make -f Makefile.68000 && \
+    make CPU=m68k SYNTAX=mot && \
     mkdir -p /opt/68000-tools/bin && \
     cp vasmm68k_mot /opt/68000-tools/bin/ && \
     cp vobjdump /opt/68000-tools/bin/
