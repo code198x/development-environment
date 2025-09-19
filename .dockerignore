@@ -1,0 +1,45 @@
+# Git and version control
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README*
+CHANGELOG*
+LICENSE*
+docs/
+
+# GitHub workflows and CI
+.github/
+*.yml
+*.yaml
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.log
+*.cache
+dist/
+build/
+
+# Node.js (if any)
+node_modules/
+package-lock.json
+
+# Python (if any)
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/

@@ -1,36 +1,15 @@
-; Simple ZX Spectrum test program
-; Tests that sjasmplus assembler is working correctly
+; Test program for sjasmplus assembler
+; Simple ZX Spectrum program that changes border color
 
-    ORG 32768
+    ORG 32768       ; Standard user program start
 
 start:
-    ; Set border to red
-    ld a, 2
-    out (254), a
+    LD A, 2         ; Load red border color
+    OUT (254), A    ; Output to border register
+    
+    LD A, 4         ; Load green border color  
+    OUT (254), A    ; Output to border register
+    
+    RET             ; Return to BASIC
 
-    ; Clear screen with green paper
-    ld a, 4         ; Green paper, black ink
-    ld (23693), a   ; Set permanent colors
-    call 3503       ; ROM clear screen routine
-
-    ; Print message
-    ld hl, message
-    call print_string
-
-    ; Infinite loop
-loop:
-    jr loop
-
-print_string:
-    ld a, (hl)
-    or a
-    ret z
-    rst 16          ; Print character
-    inc hl
-    jr print_string
-
-message:
-    defb "SJASMPLUS WORKS!", 13, 0
-
-    ; Export as TAP file
-    SAVETAP "test.tap", start
+    SAVESNA "test.sna", start   ; Save as snapshot

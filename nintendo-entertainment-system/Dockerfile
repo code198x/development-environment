@@ -26,3 +26,6 @@ ENTRYPOINT ["ca65"]
 
 # Default command shows version
 CMD ["--version"]
+# Health check to verify assembler is working
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD ca65 --version > /dev/null

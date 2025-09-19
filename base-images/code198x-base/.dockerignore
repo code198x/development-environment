@@ -1,0 +1,14 @@
+# Exclude other base images and systems during build
+../6502-base/
+../z80-base/
+../68000-base/
+../../commodore-*/
+../../nintendo-*/
+../../sinclair-*/
+../../atari-*/
+
+# Documentation and configs
+../../*.md
+../../*.json
+../../scripts/
+../../.github/

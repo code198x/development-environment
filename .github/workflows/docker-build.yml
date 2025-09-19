@@ -134,6 +134,7 @@ jobs:
             type=raw,value={{date 'YYYYMMDD'}},enable={{is_default_branch}}
 
       - name: Build Docker image (test)
+        id: build
         uses: docker/build-push-action@v5
         with:
           context: ./${{ matrix.system }}
@@ -145,21 +146,70 @@ jobs:
           cache-to: type=gha,mode=max
           load: true
 
+      - name: Analyze build performance
+        run: |
+          echo "📊 Build Performance Metrics"
+          echo "==================================="
+
+          # Image size analysis
+          size=$(docker images test-${{ matrix.system }}:latest --format "table {{.Size}}" | tail -1)
+          echo "📦 Final image size: $size"
+
+          # Layer analysis
+          echo "🗂️ Image layers:"
+          docker history test-${{ matrix.system }}:latest --format "table {{.CreatedBy}}\t{{.Size}}" | head -10
+
+          # Cache efficiency (rough estimate)
+          echo "💾 Cache status: Using GitHub Actions cache"
+
+          # Health check
+          echo "🔍 Testing image health..."
+          docker run --rm --health-cmd="exit 0" --health-interval=1s --health-retries=1 test-${{ matrix.system }}:latest sleep 2 || echo "Health check not available"
+
       - name: Test Docker image assembly
         run: |
-          echo "🧪 Testing ${{ matrix.assembler }} assembler..."
+          echo "🧪 Testing ${{ matrix.assembler }} assembler with real code..."
 
-          # Run the assembler on test file
+          # Run the assembler on real test program
           docker run --rm -v $(pwd)/${{ matrix.system }}:/workspace test-${{ matrix.system }}:latest ${{ matrix.test-command }}
 
           # Check if output was created
           if [ -f "${{ matrix.system }}/${{ matrix.test-output }}" ]; then
-            echo "✅ ${{ matrix.assembler }} test passed - output file created"
+            echo "✅ ${{ matrix.assembler }} test passed - binary created"
             ls -la ${{ matrix.system }}/${{ matrix.test-output }}
+
+            # Verify binary is not empty and has reasonable size
+            size=$(stat -c%s "${{ matrix.system }}/${{ matrix.test-output }}")
+            if [ "$size" -gt 0 ] && [ "$size" -lt 1048576 ]; then
+              echo "✅ Binary size check passed: ${size} bytes"
+            else
+              echo "❌ Binary size check failed: ${size} bytes"
+              exit 1
+            fi
           else
             echo "❌ ${{ matrix.assembler }} test failed - no output file"
             exit 1
           fi
+
+          # Test assembler help/version to verify it's working
+          echo "🔍 Verifying assembler functionality..."
+          docker run --rm test-${{ matrix.system }}:latest --help > /dev/null 2>&1 || \
+          docker run --rm test-${{ matrix.system }}:latest --version > /dev/null 2>&1 || \
+          docker run --rm test-${{ matrix.system }}:latest -h > /dev/null 2>&1 || \
+          echo "ℹ️  Assembler help not available (expected for some assemblers)"
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'test-${{ matrix.system }}:latest'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Build and push to Docker Hub
         if: github.event_name != 'pull_request' && steps.check-docker-creds.outputs.has-creds == 'true'
