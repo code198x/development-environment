@@ -11,7 +11,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV WORKSPACE=/workspace
 
 # Install common build dependencies
-RUN apt-get update && apt-get install -y \
+# Use cache mount for apt to improve caching
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     git \
     wget \
@@ -26,8 +29,7 @@ RUN apt-get update && apt-get install -y \
     automake \
     libtool \
     flex \
-    bison \
-    && rm -rf /var/lib/apt/lists/*
+    bison
 
 # Create workspace directory
 WORKDIR $WORKSPACE
