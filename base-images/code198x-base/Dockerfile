@@ -1,6 +1,7 @@
 # Base image for all Code Like It's 198x development environments
 # Provides common build tools and utilities
-FROM ubuntu:24.04
+# Pinned to specific SHA for reproducible builds
+FROM ubuntu@sha256:353675e2a41babd526e2b837d7ec780c2a05bca0164f7ea5dbbd433d21d166fc
 
 LABEL maintainer="code198x"
 LABEL description="Base image for Code Like It's 198x retro assembly development"

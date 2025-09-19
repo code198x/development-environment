@@ -16,6 +16,10 @@ on:
         type: string
         default: '--help'
         description: 'Command to test the image'
+      version-tag:
+        required: false
+        type: string
+        description: 'Specific version tag for release builds (e.g., v1.0.0)'
     secrets:
       DOCKER_USERNAME:
         required: false
@@ -87,6 +91,7 @@ jobs:
             type=ref,event=branch
             type=ref,event=pr
             type=sha,prefix={{branch}}-
+            type=raw,value=${{ inputs.version-tag }},enable=${{ inputs.version-tag != '' }}
 
       - name: Build and push ${{ inputs.display-name }}
         uses: docker/build-push-action@v5
