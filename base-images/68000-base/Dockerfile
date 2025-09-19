@@ -18,8 +18,8 @@ RUN apt-get update && apt-get install -y \
 
 # Build VASM from GitHub mirror (phoenix.owl.de unreliable)
 RUN cd /tmp && \
-    wget -q https://github.com/StarWolf3000/vasm-mirror/archive/main.tar.gz && \
-    tar -xzf main.tar.gz && \
+    wget -q https://github.com/StarWolf3000/vasm-mirror/archive/master.tar.gz && \
+    tar -xzf master.tar.gz && \
     cd vasm-mirror-* && \
     make CPU=m68k SYNTAX=mot && \
     mkdir -p /opt/68000-tools/bin && \
