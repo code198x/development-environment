@@ -28,7 +28,7 @@ RUN cd /tmp && \
 
 # Build vlink from GitHub mirror (phoenix.owl.de unreliable)
 RUN cd /tmp && \
-    wget -q https://github.com/Leffmann/vlink/archive/main.tar.gz -O vlink.tar.gz && \
+    wget -q https://github.com/Leffmann/vlink/archive/master.tar.gz -O vlink.tar.gz && \
     tar -xzf vlink.tar.gz && \
     cd vlink-* && \
     make && \
