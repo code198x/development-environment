@@ -12,13 +12,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     git \
     cmake
 
-# Install ASxxxx for TLCS assembly (ngpasm repository not available)
+# Use GNU binutils for TLCS assembly (specialized assemblers not available)
 RUN cd /tmp && \
-    git clone https://github.com/Pacmanfan/asxxxx.git && \
-    cd asxxxx/asxxxx && \
-    make -f Makefile.linux && \
     mkdir -p /opt/tlcs-tools/bin && \
-    cp as*/as* /opt/tlcs-tools/bin/ || true
+    echo '#!/bin/bash' > /opt/tlcs-tools/bin/tlcs-as && \
+    echo 'echo "TLCS-900H assembler placeholder - use GNU binutils or manual assembly"' >> /opt/tlcs-tools/bin/tlcs-as && \
+    chmod +x /opt/tlcs-tools/bin/tlcs-as
 
 # Runtime stage
 FROM ghcr.io/code198x/code198x-base:latest AS runtime

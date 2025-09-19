@@ -1,7 +1,3 @@
-# Version pinning for reproducible builds
-ARG ARM_GCC_VERSION=12.2.0
-ARG DEVKITARM_VERSION=r59
-
 # Base image for ARM processors (GBA, DS, 3DO)
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
@@ -15,25 +11,22 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     build-essential \
     git \
     wget \
-    bzip2 \
+    unzip \
     libncurses6
 
-# Re-declare ARGs for this stage
-ARG DEVKITARM_VERSION
-
-# Install devkitARM for GBA/DS development
+# Install GNU ARM cross-compiler (alternative to devkitPro)
 RUN cd /tmp && \
-    wget -q https://github.com/devkitPro/pacman/releases/latest/download/devkitpro-pacman.amd64.deb && \
-    dpkg -i devkitpro-pacman.amd64.deb || apt-get -f install -y && \
-    dkp-pacman -Sy --noconfirm devkitARM gba-tools nds-tools && \
-    mkdir -p /opt/arm-tools && \
-    cp -r /opt/devkitpro/devkitARM/* /opt/arm-tools/ && \
-    cp -r /opt/devkitpro/tools/bin/* /opt/arm-tools/bin/
+    apt-get update && apt-get install -y --no-install-recommends \
+    gcc-arm-none-eabi \
+    binutils-arm-none-eabi && \
+    mkdir -p /opt/arm-tools/bin && \
+    ln -s /usr/bin/arm-none-eabi-* /opt/arm-tools/bin/ || true
 
 # Install FASMARM for additional ARM assembly
 RUN cd /tmp && \
     wget -q https://flatassembler.net/fasmarm.zip && \
     unzip -q fasmarm.zip && \
+    mkdir -p /opt/arm-tools/bin && \
     cp fasmarm/fasmarm /opt/arm-tools/bin/ && \
     chmod +x /opt/arm-tools/bin/fasmarm
 
