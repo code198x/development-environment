@@ -9,7 +9,8 @@ LABEL system="nintendo-entertainment-system"
 USER root
 
 # Build cc65 from source
-RUN git clone https://github.com/cc65/cc65.git /tmp/cc65 && \
+RUN mkdir -p /opt/6502-tools && \
+    git clone https://github.com/cc65/cc65.git /tmp/cc65 && \
     cd /tmp/cc65 && \
     make && \
     make install PREFIX=/opt/6502-tools && \

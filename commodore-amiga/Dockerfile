@@ -10,7 +10,8 @@ USER root
 
 # Download and build VASM
 # Note: Using multiple mirror URLs for reliability
-RUN for url in \
+RUN mkdir -p /opt/68000-tools/bin && \
+    for url in \
         "http://phoenix.owl.de/tags/vasm1_9.tar.gz" \
         "http://sun.hasenbraten.de/vasm/release/vasm.tar.gz" \
         "https://github.com/mbitsnbites/vasm/archive/refs/heads/master.tar.gz"; do \

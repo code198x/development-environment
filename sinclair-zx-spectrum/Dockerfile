@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Build SjASMPlus from source (with submodules for dependencies)
-RUN git clone --recursive https://github.com/z00m128/sjasmplus.git /tmp/sjasmplus && \
+RUN mkdir -p /opt/z80-tools/bin && \
+    git clone --recursive https://github.com/z00m128/sjasmplus.git /tmp/sjasmplus && \
     cd /tmp/sjasmplus && \
     make && \
     cp sjasmplus /opt/z80-tools/bin/ && \

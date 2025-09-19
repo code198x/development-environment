@@ -9,7 +9,8 @@ LABEL system="commodore-64"
 USER root
 
 # Build ACME from source
-RUN git clone https://github.com/meonwax/acme.git /tmp/acme && \
+RUN mkdir -p /opt/6502-tools/bin && \
+    git clone https://github.com/meonwax/acme.git /tmp/acme && \
     cd /tmp/acme/src && \
     make && \
     cp acme /opt/6502-tools/bin/ && \
