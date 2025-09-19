@@ -12,24 +12,25 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     build-essential \
     git \
     cmake \
+    autotools-dev \
+    autoconf \
+    automake \
     zlib1g-dev
 
-# Build simple 8080 assembler from source
+# Build asm8080 assembler from source (autotools project)
 RUN cd /tmp && \
     mkdir -p /opt/8080-tools/bin && \
     git clone https://github.com/begoon/asm8080.git && \
     cd asm8080 && \
-    if [ -f CMakeLists.txt ]; then \
-        cmake . && make && cp asm8080 /opt/8080-tools/bin/; \
+    if [ -f configure ]; then \
+        ./configure --prefix=/opt/8080-tools && make && make install; \
+    elif [ -f configure.ac ]; then \
+        chmod +x autogen.sh && ./autogen.sh && ./configure --prefix=/opt/8080-tools && make && make install; \
     elif [ -f Makefile ]; then \
         make && cp asm8080 /opt/8080-tools/bin/; \
-    elif ls *.c >/dev/null 2>&1; then \
-        gcc -o asm8080 *.c && cp asm8080 /opt/8080-tools/bin/; \
     else \
-        echo "No supported build system found, creating placeholder" && \
-        echo '#!/bin/bash' > /opt/8080-tools/bin/asm8080 && \
-        echo 'echo "8080 assembler placeholder - repository build failed"' >> /opt/8080-tools/bin/asm8080 && \
-        chmod +x /opt/8080-tools/bin/asm8080; \
+        echo "Building from source files directly" && \
+        cd src && gcc -o asm8080 *.c && cp asm8080 /opt/8080-tools/bin/; \
     fi
 
 # Build z80asm with 8080 support (fallback)
