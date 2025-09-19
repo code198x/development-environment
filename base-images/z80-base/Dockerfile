@@ -1,3 +1,7 @@
+# Version pinning for reproducible builds (must be before FROM)
+ARG SJASMPLUS_VERSION=v1.20.3
+ARG PASMO_VERSION=0.5.5
+
 # Base image for Z80-family processors
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
@@ -14,9 +18,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Version pinning for reproducible builds
-ARG SJASMPLUS_VERSION=v1.20.3
-ARG PASMO_VERSION=0.5.5
+# Re-declare ARGs for this stage
+ARG SJASMPLUS_VERSION
+ARG PASMO_VERSION
 
 # Build sjasmplus (needs git for submodules)
 RUN cd /tmp && \

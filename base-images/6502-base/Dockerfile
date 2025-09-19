@@ -1,3 +1,7 @@
+# Version pinning for reproducible builds (must be before FROM)
+ARG ACME_VERSION=0.97
+ARG CC65_VERSION=V2.19
+
 # Base image for 6502-family processors
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
@@ -12,9 +16,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Version pinning for reproducible builds
-ARG ACME_VERSION=0.97
-ARG CC65_VERSION=V2.19
+# Re-declare ARGs for this stage
+ARG ACME_VERSION
+ARG CC65_VERSION
 
 # Build ACME cross-assembler
 RUN cd /tmp && \

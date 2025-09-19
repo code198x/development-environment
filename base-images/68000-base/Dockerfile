@@ -1,3 +1,7 @@
+# Version pinning for reproducible builds (must be before FROM)
+ARG VASM_VERSION=1_9e
+ARG VLINK_VERSION=0_17a
+
 # Base image for 68000-family processors
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
@@ -12,9 +16,9 @@ RUN apt-get update && apt-get install -y \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Version pinning for reproducible builds
-ARG VASM_VERSION=1_9e
-ARG VLINK_VERSION=0_17a
+# Re-declare ARGs for this stage
+ARG VASM_VERSION
+ARG VLINK_VERSION
 
 # Build VASM
 RUN cd /tmp && \
