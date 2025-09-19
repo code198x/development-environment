@@ -9,12 +9,14 @@ FROM ghcr.io/code198x/code198x-base:latest AS builder
 USER root
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y \
+# Use cache mount for apt to improve caching
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     zlib1g-dev \
     libpng-dev \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+    wget
 
 # Re-declare ARGs for this stage
 ARG ACME_COMMIT
@@ -47,10 +49,12 @@ LABEL version="1.0.0"
 USER root
 
 # Install only runtime dependencies
-RUN apt-get update && apt-get install -y \
+# Use cache mount for apt to improve caching
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     xxd \
-    bsdmainutils \
-    && rm -rf /var/lib/apt/lists/*
+    bsdmainutils
 
 # Copy built tools from builder stage
 COPY --from=builder /opt/6502-tools /opt/6502-tools

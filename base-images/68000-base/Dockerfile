@@ -7,12 +7,14 @@ FROM ghcr.io/code198x/code198x-base:latest AS builder
 USER root
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y \
+# Use cache mount for apt to improve caching
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     zlib1g-dev \
     libpng-dev \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
+    wget
 
 # No ARGs needed - using latest from GitHub mirrors
 
