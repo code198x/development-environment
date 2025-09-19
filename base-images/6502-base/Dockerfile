@@ -24,7 +24,7 @@ ARG CC65_VERSION
 RUN cd /tmp && \
     wget -q https://github.com/meonwax/acme/archive/${ACME_COMMIT}.tar.gz && \
     tar -xzf ${ACME_COMMIT}.tar.gz && \
-    cd acme-${ACME_COMMIT}/src && \
+    cd acme-*/src && \
     make && \
     mkdir -p /opt/6502-tools/bin && \
     cp acme /opt/6502-tools/bin/

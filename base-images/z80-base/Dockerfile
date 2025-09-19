@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     cmake \
     wget \
+    autotools-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Re-declare ARGs for this stage
@@ -37,6 +38,8 @@ RUN cd /tmp && \
     wget -q http://pasmo.speccy.org/bin/pasmo-${PASMO_VERSION}.tar.gz && \
     tar -xzf pasmo-${PASMO_VERSION}.tar.gz && \
     cd pasmo-${PASMO_VERSION} && \
+    cp /usr/share/misc/config.guess . && \
+    cp /usr/share/misc/config.sub . && \
     ./configure --prefix=/opt/z80-tools && \
     make && make install
 

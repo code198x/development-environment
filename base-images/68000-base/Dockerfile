@@ -1,5 +1,5 @@
 # Version pinning for reproducible builds (must be before FROM)
-ARG VASM_VERSION=1_9
+ARG VASM_COMMIT=e7bfb2e
 ARG VLINK_VERSION=0_17a
 
 # Base image for 68000-family processors
@@ -17,14 +17,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Re-declare ARGs for this stage
-ARG VASM_VERSION
+ARG VASM_COMMIT
 ARG VLINK_VERSION
 
-# Build VASM
+# Build VASM from GitHub mirror (phoenix.owl.de unreliable)
 RUN cd /tmp && \
-    wget -q http://phoenix.owl.de/tags/vasm${VASM_VERSION}.tar.gz && \
-    tar -xzf vasm${VASM_VERSION}.tar.gz && \
-    cd vasm && \
+    wget -q https://github.com/mist64/vasm/archive/${VASM_COMMIT}.tar.gz && \
+    tar -xzf ${VASM_COMMIT}.tar.gz && \
+    cd vasm-* && \
     make CPU=m68k SYNTAX=mot && \
     mkdir -p /opt/68000-tools/bin && \
     cp vasmm68k_mot /opt/68000-tools/bin/ && \
