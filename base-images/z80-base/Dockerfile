@@ -6,20 +6,24 @@ USER root
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
     zlib1g-dev \
     libpng-dev \
     cmake \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Version pinning for reproducible builds
 ARG SJASMPLUS_VERSION=v1.20.3
 ARG PASMO_VERSION=0.5.5
 
-# Build sjasmplus
+# Build sjasmplus (needs git for submodules)
 RUN cd /tmp && \
-    wget -q https://github.com/z00m128/sjasmplus/archive/refs/tags/${SJASMPLUS_VERSION}.tar.gz && \
-    tar -xzf ${SJASMPLUS_VERSION}.tar.gz && \
-    cd sjasmplus-* && \
+    git clone --recursive https://github.com/z00m128/sjasmplus.git && \
+    cd sjasmplus && \
+    git checkout ${SJASMPLUS_VERSION} && \
+    git submodule update --init --recursive && \
     make && \
     mkdir -p /opt/z80-tools/bin && \
     cp sjasmplus /opt/z80-tools/bin/

@@ -6,8 +6,10 @@ USER root
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
     zlib1g-dev \
     libpng-dev \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Version pinning for reproducible builds
