@@ -1,6 +1,3 @@
-# Version pinning for reproducible builds
-ARG NGPASM_VERSION=main
-
 # Base image for TLCS-900H processors (Neo Geo Pocket)
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
@@ -15,18 +12,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     git \
     cmake
 
-# Re-declare ARGs for this stage
-ARG NGPASM_VERSION
-
-# Install ngpasm for Neo Geo Pocket development
-RUN cd /tmp && \
-    git clone https://github.com/NGPdevs/ngpasm.git && \
-    cd ngpasm && \
-    make && \
-    mkdir -p /opt/tlcs-tools/bin && \
-    cp ngpasm /opt/tlcs-tools/bin/
-
-# Install ASxxxx for TLCS assembly
+# Install ASxxxx for TLCS assembly (ngpasm repository not available)
 RUN cd /tmp && \
     git clone https://github.com/Pacmanfan/asxxxx.git && \
     cd asxxxx/asxxxx && \
@@ -57,4 +43,4 @@ ENV RETRO_ARCH="tlcs"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD ngpasm --help > /dev/null 2>&1 || echo "OK"
+    CMD ls /opt/tlcs-tools/bin/as* > /dev/null 2>&1 || echo "OK"

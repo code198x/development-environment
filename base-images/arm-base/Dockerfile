@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     git \
     wget \
     bzip2 \
-    libncurses5
+    libncurses6
 
 # Re-declare ARGs for this stage
 ARG DEVKITARM_VERSION

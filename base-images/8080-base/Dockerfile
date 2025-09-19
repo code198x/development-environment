@@ -1,6 +1,3 @@
-# Version pinning for reproducible builds
-ARG ASM8080_VERSION=v1.0.0
-
 # Base image for Intel 8080/8085 processors
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
@@ -16,14 +13,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     git \
     zlib1g-dev
 
-# Re-declare ARGs for this stage
-ARG ASM8080_VERSION
-
 # Build asm8080 assembler
 RUN cd /tmp && \
     git clone https://github.com/begoon/asm8080.git && \
     cd asm8080 && \
-    git checkout ${ASM8080_VERSION} || true && \
     make && \
     mkdir -p /opt/8080-tools/bin && \
     cp asm8080 /opt/8080-tools/bin/

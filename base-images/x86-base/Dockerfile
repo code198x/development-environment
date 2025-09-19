@@ -39,13 +39,7 @@ RUN cd /tmp && \
     make -j$(nproc) && \
     make install
 
-# Install A86 assembler (for DOS compatibility)
-RUN cd /tmp && \
-    wget -q https://eji.com/a86/a86v405.zip && \
-    unzip -q a86v405.zip && \
-    mkdir -p /opt/x86-tools/bin && \
-    cp A86.COM /opt/x86-tools/bin/a86 && \
-    chmod +x /opt/x86-tools/bin/a86
+# A86 assembler not available - NASM and YASM provide complete x86 coverage
 
 # Runtime stage
 FROM ghcr.io/code198x/code198x-base:latest AS runtime
