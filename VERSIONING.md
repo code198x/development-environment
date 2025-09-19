@@ -85,6 +85,41 @@ Special releases timed for academic calendars:
 - Mixed versions are not supported (don't use v1.0.0 base with v1.1.0 systems)
 - Academic year tags provide semester-long stability
 
+## Multi-Platform Availability
+
+### Container Registries
+
+For maximum availability and redundancy, containers are published to multiple registries:
+
+#### Primary (GitHub Container Registry)
+```bash
+ghcr.io/code198x/[system-name]:v1.0.0
+```
+
+#### Mirror (GitLab Container Registry)
+```bash
+registry.gitlab.com/code198x/development-environment/[system-name]:v1.0.0
+```
+
+#### Backup (Docker Hub - if available)
+```bash
+code198x/[system-name]:v1.0.0
+```
+
+### Educational Institution Support
+
+Different institutions may prefer different platforms:
+- **GitHub**: Most common, integrated with educational programs
+- **GitLab**: Preferred by some universities, European hosting
+- **Docker Hub**: Traditional Docker registry, globally distributed
+
+### Platform Redundancy Benefits
+
+- Survives single-platform outages or policy changes
+- Provides choice for institutional preferences
+- Ensures global accessibility regardless of regional restrictions
+- Protects against vendor lock-in for educational infrastructure
+
 ## Update Strategy
 
 ### Automated Updates
