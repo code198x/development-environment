@@ -1,5 +1,5 @@
 # Version pinning for reproducible builds (must be before FROM)
-ARG SJASMPLUS_VERSION=v1.20.3
+ARG SJASMPLUS_VERSION=v1.21.0
 ARG PASMO_VERSION=0.5.5
 
 # Base image for Z80-family processors

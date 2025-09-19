@@ -1,5 +1,5 @@
 # Version pinning for reproducible builds (must be before FROM)
-ARG VASM_VERSION=1_9e
+ARG VASM_VERSION=1_9
 ARG VLINK_VERSION=0_17a
 
 # Base image for 68000-family processors
