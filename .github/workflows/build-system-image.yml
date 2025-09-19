@@ -25,6 +25,12 @@ on:
 env:
   DOCKER_ORG: code198x
   GHCR_ORG: ghcr.io/code198x
+  # Improve Docker build performance and reliability
+  DOCKER_BUILDKIT: 1
+  BUILDX_NO_DEFAULT_ATTESTATIONS: 1
+  # Registry rate limiting protection
+  REGISTRY_RETRY_ATTEMPTS: 3
+  REGISTRY_RETRY_DELAY: 30
 
 permissions:
   contents: read
