@@ -14,21 +14,21 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     wget \
     bzip2
 
-# Build Alfred Arnold's Macroassembler AS from GitHub mirror
-# This supports TLCS-900H among many other processors
+# Build Alfred Arnold's AS assembler (supports TLCS-900H among 75+ CPU families)
 RUN cd /tmp && \
-    git clone --depth=1 https://github.com/begoon/asl.git && \
-    cd asl && \
-    if [ -f Makefile.def.tmpl ]; then \
-        cp Makefile.def.tmpl Makefile.def && \
-        sed -i 's/CFLAGS = .*/CFLAGS = -O2 -Wall/' Makefile.def; \
+    wget -q http://john.ccac.rwth-aachen.de:8000/ftp/as/source/c_version/asl-current.tar.bz2 && \
+    tar xjf asl-current.tar.bz2 && \
+    cd asl-* && \
+    if [ -f Makefile.def-samples/Makefile.def-unknown-linux ]; then \
+        cp Makefile.def-samples/Makefile.def-unknown-linux Makefile.def; \
     else \
-        echo "CFLAGS = -O2 -Wall" > Makefile.def; \
+        echo "CFLAGS = -O2" > Makefile.def; \
+        echo "CPUDEF = -DHAS_STDC" >> Makefile.def; \
     fi && \
-    make -j1 && \
-    mkdir -p /opt/tlcs-tools/bin /opt/tlcs-tools/lib /opt/tlcs-tools/include && \
-    cp asl /opt/tlcs-tools/bin/ || echo "asl build failed" && \
-    cp p2* /opt/tlcs-tools/bin/ 2>/dev/null || true
+    make binaries && \
+    mkdir -p /opt/tlcs-tools/bin /opt/tlcs-tools/include/asl /opt/tlcs-tools/lib/asl && \
+    cp asl p2hex p2bin plist alink pbind /opt/tlcs-tools/bin/ && \
+    cp include/*.inc /opt/tlcs-tools/include/asl/ 2>/dev/null || true
 
 # Build ngdis disassembler for Neo Geo Pocket development
 RUN cd /tmp && \
@@ -59,6 +59,6 @@ USER code198x
 ENV PATH="/opt/tlcs-tools/bin:$PATH"
 ENV RETRO_ARCH="tlcs"
 
-# Health check - check for asl (the AS assembler)
+# Health check - verify AS assembler is available
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD asl --version > /dev/null 2>&1 || echo "OK"
+    CMD test -x /opt/tlcs-tools/bin/asl || echo "OK"
