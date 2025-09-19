@@ -1,26 +1,21 @@
 # ACME Cross-Assembler for Commodore 64
-FROM ubuntu:24.04
+FROM ghcr.io/code198x/6502-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="ACME assembler for Commodore 64 development"
 LABEL version="1.0.0"
+LABEL system="commodore-64"
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    git \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+USER root
 
 # Build ACME from source
 RUN git clone https://github.com/meonwax/acme.git /tmp/acme && \
     cd /tmp/acme/src && \
     make && \
-    make install && \
+    cp acme /opt/6502-tools/bin/ && \
     rm -rf /tmp/acme
 
-# Create workspace directory
-WORKDIR /workspace
+USER retro
 
 # Set ACME as the entrypoint
 ENTRYPOINT ["acme"]
