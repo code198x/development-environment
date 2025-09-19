@@ -35,13 +35,7 @@ RUN cd /tmp && \
     make -j$(nproc) && \
     make install
 
-# Install asmsh for Saturn/Dreamcast development
-RUN cd /tmp && \
-    git clone https://github.com/superctr/asmsh.git && \
-    cd asmsh && \
-    make && \
-    mkdir -p /opt/sh-tools/bin && \
-    cp asmsh /opt/sh-tools/bin/
+# asmsh repository not available - GNU binutils provides complete SuperH toolchain
 
 # Runtime stage
 FROM ghcr.io/code198x/code198x-base:latest AS runtime
