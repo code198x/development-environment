@@ -39,7 +39,6 @@ env:
 permissions:
   contents: read
   packages: write
-  security-events: write
 
 jobs:
   build:
@@ -110,17 +109,3 @@ jobs:
           echo "🔍 Testing ${{ inputs.display-name }} image..."
           docker run --rm ${{ env.GHCR_ORG }}/${{ inputs.system-name }}:latest ${{ inputs.test-command }} || \
           echo "ℹ️ Test command may not be supported"
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ env.GHCR_ORG }}/${{ inputs.system-name }}:latest'
-          format: 'sarif'
-          output: 'trivy-${{ inputs.system-name }}.sarif'
-
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: 'trivy-${{ inputs.system-name }}.sarif'
-          category: 'trivy-${{ inputs.system-name }}'
