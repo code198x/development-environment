@@ -189,7 +189,7 @@ jobs:
   # Using reusable workflow for DRY principle
   # ============================================
 
-  # 6502 Family
+  # 6502 Family (8 systems)
   build-commodore-64:
     name: C64
     needs: build-6502-base
@@ -198,6 +198,19 @@ jobs:
     with:
       system-name: commodore-64
       display-name: Commodore 64
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-commodore-vic-20:
+    name: VIC-20
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: commodore-vic-20
+      display-name: Commodore VIC-20
       test-command: --help
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -216,7 +229,72 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
-  # Z80 Family
+  build-apple-ii:
+    name: Apple II
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: apple-ii
+      display-name: Apple II
+      test-command: --version
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-atari-2600:
+    name: Atari 2600
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: atari-2600
+      display-name: Atari 2600
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-atari-800:
+    name: Atari 800
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: atari-800
+      display-name: Atari 800
+      test-command: --version
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-acorn-bbc-micro:
+    name: BBC Micro
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: acorn-bbc-micro
+      display-name: BBC Micro
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-acorn-electron:
+    name: Electron
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: acorn-electron
+      display-name: Acorn Electron
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # Z80 Family (5 systems)
   build-zx-spectrum:
     name: Spectrum
     needs: build-z80-base
@@ -230,7 +308,59 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
-  # 68000 Family
+  build-amstrad-cpc:
+    name: CPC
+    needs: build-z80-base
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: amstrad-cpc
+      display-name: Amstrad CPC
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-msx:
+    name: MSX
+    needs: build-z80-base
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: msx
+      display-name: MSX
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-sega-master-system:
+    name: Master System
+    needs: build-z80-base
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: sega-master-system
+      display-name: Sega Master System
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-nintendo-game-boy:
+    name: Game Boy
+    needs: build-z80-base
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: nintendo-game-boy
+      display-name: Nintendo Game Boy
+      test-command: --help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # 68000 Family (3 systems)
   build-commodore-amiga:
     name: Amiga
     needs: build-68000-base
@@ -244,6 +374,32 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
+  build-atari-st:
+    name: Atari ST
+    needs: build-68000-base
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: atari-st
+      display-name: Atari ST
+      test-command: -help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-sharp-x68000:
+    name: X68000
+    needs: build-68000-base
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: sharp-x68000
+      display-name: Sharp X68000
+      test-command: -help
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
   # ============================================
   # Stage 4: Summary
   # ============================================
@@ -252,10 +408,25 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs: [
+      # 6502 Family
       build-commodore-64,
+      build-commodore-vic-20,
       build-nintendo-nes,
+      build-apple-ii,
+      build-atari-2600,
+      build-atari-800,
+      build-acorn-bbc-micro,
+      build-acorn-electron,
+      # Z80 Family
       build-zx-spectrum,
-      build-commodore-amiga
+      build-amstrad-cpc,
+      build-msx,
+      build-sega-master-system,
+      build-nintendo-game-boy,
+      # 68000 Family
+      build-commodore-amiga,
+      build-atari-st,
+      build-sharp-x68000
     ]
 
     steps:
@@ -272,14 +443,28 @@ jobs:
           cat >> $GITHUB_STEP_SUMMARY << 'EOF'
           # 🚀 Docker Build Summary
 
-          ## Build Results
+          ## Build Results (16 Systems)
 
-          | System | Family | Status |
-          |--------|--------|--------|
-          | Commodore 64 | 6502 | ${{ needs.build-commodore-64.result == 'success' && '✅' || needs.build-commodore-64.result == 'skipped' && '⏭️' || '❌' }} |
-          | Nintendo NES | 6502 | ${{ needs.build-nintendo-nes.result == 'success' && '✅' || needs.build-nintendo-nes.result == 'skipped' && '⏭️' || '❌' }} |
-          | ZX Spectrum | Z80 | ${{ needs.build-zx-spectrum.result == 'success' && '✅' || needs.build-zx-spectrum.result == 'skipped' && '⏭️' || '❌' }} |
-          | Commodore Amiga | 68000 | ${{ needs.build-commodore-amiga.result == 'success' && '✅' || needs.build-commodore-amiga.result == 'skipped' && '⏭️' || '❌' }} |
+          ### 6502 Family (8 systems)
+          | System | Status | System | Status |
+          |--------|--------|--------|--------|
+          | C64 | ${{ needs.build-commodore-64.result == 'success' && '✅' || needs.build-commodore-64.result == 'skipped' && '⏭️' || '❌' }} | VIC-20 | ${{ needs.build-commodore-vic-20.result == 'success' && '✅' || needs.build-commodore-vic-20.result == 'skipped' && '⏭️' || '❌' }} |
+          | NES | ${{ needs.build-nintendo-nes.result == 'success' && '✅' || needs.build-nintendo-nes.result == 'skipped' && '⏭️' || '❌' }} | Apple II | ${{ needs.build-apple-ii.result == 'success' && '✅' || needs.build-apple-ii.result == 'skipped' && '⏭️' || '❌' }} |
+          | Atari 2600 | ${{ needs.build-atari-2600.result == 'success' && '✅' || needs.build-atari-2600.result == 'skipped' && '⏭️' || '❌' }} | Atari 800 | ${{ needs.build-atari-800.result == 'success' && '✅' || needs.build-atari-800.result == 'skipped' && '⏭️' || '❌' }} |
+          | BBC Micro | ${{ needs.build-acorn-bbc-micro.result == 'success' && '✅' || needs.build-acorn-bbc-micro.result == 'skipped' && '⏭️' || '❌' }} | Electron | ${{ needs.build-acorn-electron.result == 'success' && '✅' || needs.build-acorn-electron.result == 'skipped' && '⏭️' || '❌' }} |
+
+          ### Z80 Family (5 systems)
+          | System | Status | System | Status |
+          |--------|--------|--------|--------|
+          | Spectrum | ${{ needs.build-zx-spectrum.result == 'success' && '✅' || needs.build-zx-spectrum.result == 'skipped' && '⏭️' || '❌' }} | CPC | ${{ needs.build-amstrad-cpc.result == 'success' && '✅' || needs.build-amstrad-cpc.result == 'skipped' && '⏭️' || '❌' }} |
+          | MSX | ${{ needs.build-msx.result == 'success' && '✅' || needs.build-msx.result == 'skipped' && '⏭️' || '❌' }} | Master System | ${{ needs.build-sega-master-system.result == 'success' && '✅' || needs.build-sega-master-system.result == 'skipped' && '⏭️' || '❌' }} |
+          | Game Boy | ${{ needs.build-nintendo-game-boy.result == 'success' && '✅' || needs.build-nintendo-game-boy.result == 'skipped' && '⏭️' || '❌' }} | | |
+
+          ### 68000 Family (3 systems)
+          | System | Status | System | Status |
+          |--------|--------|--------|--------|
+          | Amiga | ${{ needs.build-commodore-amiga.result == 'success' && '✅' || needs.build-commodore-amiga.result == 'skipped' && '⏭️' || '❌' }} | Atari ST | ${{ needs.build-atari-st.result == 'success' && '✅' || needs.build-atari-st.result == 'skipped' && '⏭️' || '❌' }} |
+          | X68000 | ${{ needs.build-sharp-x68000.result == 'success' && '✅' || needs.build-sharp-x68000.result == 'skipped' && '⏭️' || '❌' }} | | |
 
           ## Architecture Benefits
 
@@ -290,14 +475,16 @@ jobs:
           - **♻️ Reusable Components**: DRY principle via reusable workflows
           - **🔧 Easy Scaling**: Add new systems by adding one workflow call
 
-          ## Performance Metrics
+          ## Performance Metrics (16 Systems)
 
           | Metric | Sequential | Parallel | Improvement |
           |--------|------------|----------|-------------|
-          | Total Jobs | 2 | 8 | 4x granularity |
-          | Max Parallelism | 2 | 7 | 3.5x |
+          | Total Jobs | 2 | 20 | 10x granularity |
+          | Max Parallelism | 2 | 19 | 9.5x |
+          | System Builds | Sequential | 16 concurrent | 🚀 |
           | Failure Impact | Blocks all | Isolated | ✅ |
-          | GitHub UI | 2 checks | 8 checks | Better visibility |
+          | GitHub UI | 2 checks | 20 checks | Full visibility |
+          | Build Time (est) | 90+ min | 15-20 min | 4-6x faster |
 
           ## Registry
 
@@ -307,7 +494,19 @@ jobs:
       - name: Set exit code
         if: |
           needs.build-commodore-64.result == 'failure' ||
+          needs.build-commodore-vic-20.result == 'failure' ||
           needs.build-nintendo-nes.result == 'failure' ||
+          needs.build-apple-ii.result == 'failure' ||
+          needs.build-atari-2600.result == 'failure' ||
+          needs.build-atari-800.result == 'failure' ||
+          needs.build-acorn-bbc-micro.result == 'failure' ||
+          needs.build-acorn-electron.result == 'failure' ||
           needs.build-zx-spectrum.result == 'failure' ||
-          needs.build-commodore-amiga.result == 'failure'
+          needs.build-amstrad-cpc.result == 'failure' ||
+          needs.build-msx.result == 'failure' ||
+          needs.build-sega-master-system.result == 'failure' ||
+          needs.build-nintendo-game-boy.result == 'failure' ||
+          needs.build-commodore-amiga.result == 'failure' ||
+          needs.build-atari-st.result == 'failure' ||
+          needs.build-sharp-x68000.result == 'failure'
         run: exit 1
