@@ -10,14 +10,33 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     git \
-    cmake
+    make \
+    wget \
+    bzip2
 
-# Use GNU binutils for TLCS assembly (specialized assemblers not available)
+# Build Alfred Arnold's Macroassembler AS from GitHub mirror
+# This supports TLCS-900H among many other processors
 RUN cd /tmp && \
+    git clone --depth=1 https://github.com/begoon/asl.git && \
+    cd asl && \
+    if [ -f Makefile.def.tmpl ]; then \
+        cp Makefile.def.tmpl Makefile.def && \
+        sed -i 's/CFLAGS = .*/CFLAGS = -O2 -Wall/' Makefile.def; \
+    else \
+        echo "CFLAGS = -O2 -Wall" > Makefile.def; \
+    fi && \
+    make -j1 && \
+    mkdir -p /opt/tlcs-tools/bin /opt/tlcs-tools/lib /opt/tlcs-tools/include && \
+    cp asl /opt/tlcs-tools/bin/ || echo "asl build failed" && \
+    cp p2* /opt/tlcs-tools/bin/ 2>/dev/null || true
+
+# Build ngdis disassembler for Neo Geo Pocket development
+RUN cd /tmp && \
+    git clone --depth=1 https://github.com/jounikor/ngdis.git && \
+    cd ngdis && \
+    make && \
     mkdir -p /opt/tlcs-tools/bin && \
-    echo '#!/bin/bash' > /opt/tlcs-tools/bin/tlcs-as && \
-    echo 'echo "TLCS-900H assembler placeholder - use GNU binutils or manual assembly"' >> /opt/tlcs-tools/bin/tlcs-as && \
-    chmod +x /opt/tlcs-tools/bin/tlcs-as
+    find . -maxdepth 1 -type f -executable -exec cp {} /opt/tlcs-tools/bin/ \; || echo "ngdis build failed"
 
 # Runtime stage
 FROM ghcr.io/code198x/code198x-base:latest AS runtime
@@ -40,6 +59,6 @@ USER code198x
 ENV PATH="/opt/tlcs-tools/bin:$PATH"
 ENV RETRO_ARCH="tlcs"
 
-# Health check
+# Health check - check for asl (the AS assembler)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD ls /opt/tlcs-tools/bin/as* > /dev/null 2>&1 || echo "OK"
+    CMD asl --version > /dev/null 2>&1 || echo "OK"

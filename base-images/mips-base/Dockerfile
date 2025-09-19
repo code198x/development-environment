@@ -1,47 +1,41 @@
-# Version pinning for reproducible builds
-ARG MIPS_GCC_VERSION=12.2.0
-ARG BINUTILS_VERSION=2.40
-
 # Base image for MIPS processors (PlayStation, N64, SGI)
 # Multi-stage build for smaller runtime image
 FROM ghcr.io/code198x/code198x-base:latest AS builder
 
 USER root
 
-# Install build dependencies
+# Install MIPS toolchain from package repositories
+# Use packaged cross-compilers for efficiency
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     git \
-    wget \
-    texinfo \
-    libgmp-dev \
-    libmpfr-dev \
-    libmpc-dev \
-    flex \
-    bison
+    cmake \
+    gcc-mips-linux-gnu \
+    g++-mips-linux-gnu \
+    binutils-mips-linux-gnu \
+    gcc-mipsel-linux-gnu \
+    g++-mipsel-linux-gnu \
+    binutils-mipsel-linux-gnu
 
-# Re-declare ARGs for this stage
-ARG MIPS_GCC_VERSION
-ARG BINUTILS_VERSION
+# Create tools directory
+RUN mkdir -p /opt/mips-tools/bin
 
-# Build MIPS cross-compiler toolchain
+# Build PSX SDK tools for PlayStation development (optional)
 RUN cd /tmp && \
-    wget -q https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.xz && \
-    tar -xf binutils-${BINUTILS_VERSION}.tar.xz && \
-    cd binutils-${BINUTILS_VERSION} && \
-    ./configure --target=mips-unknown-elf --prefix=/opt/mips-tools --disable-nls && \
-    make -j$(nproc) && \
-    make install
+    git clone --depth=1 https://github.com/Lameguy64/PSn00bSDK.git && \
+    cd PSn00bSDK && \
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/opt/mips-tools && \
+    cmake --build build && \
+    cmake --install build || echo "PSn00bSDK build failed - continuing with GNU tools"
 
-# Install SPASM-ng for older MIPS systems
+# Build N64 tools (optional)
 RUN cd /tmp && \
-    git clone https://github.com/alberthdev/spasm-ng.git && \
-    cd spasm-ng && \
+    git clone --depth=1 https://github.com/ARM9/bass.git && \
+    cd bass/bass && \
     make && \
-    mkdir -p /opt/mips-tools/bin && \
-    cp spasm-ng /opt/mips-tools/bin/spasm
+    cp ../bass /opt/mips-tools/bin/ || echo "bass build failed - continuing with GNU tools"
 
 # Runtime stage
 FROM ghcr.io/code198x/code198x-base:latest AS runtime
@@ -52,7 +46,16 @@ LABEL version="1.0.0"
 
 USER root
 
-# Copy built tools from builder stage
+# Install runtime MIPS tools
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+    gcc-mips-linux-gnu \
+    binutils-mips-linux-gnu \
+    gcc-mipsel-linux-gnu \
+    binutils-mipsel-linux-gnu
+
+# Copy any additional built tools from builder stage (PSn00bSDK, bass)
 COPY --from=builder /opt/mips-tools /opt/mips-tools
 
 # Set up directories and permissions
@@ -61,9 +64,9 @@ RUN chown -R code198x:code198x /opt/mips-tools
 USER code198x
 
 # Set environment variables
-ENV PATH="/opt/mips-tools/bin:$PATH"
+ENV PATH="/opt/mips-tools/bin:/usr/bin:$PATH"
 ENV RETRO_ARCH="mips"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD mips-unknown-elf-as --version > /dev/null
+    CMD mips-linux-gnu-as --version > /dev/null 2>&1 || mipsel-linux-gnu-as --version > /dev/null
