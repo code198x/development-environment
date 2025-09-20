@@ -9,12 +9,14 @@ on:
       - '.github/workflows/docker-build.yml'
       - '.github/workflows/build-system-image.yml'
       - 'base-images/*/Dockerfile'
+      - 'toolchains/*/Dockerfile'
   pull_request:
     branches: [main]
     paths:
       - 'systems/*/Dockerfile'
       - 'systems/*/*.asm'
       - 'base-images/*/Dockerfile'
+      - 'toolchains/*/Dockerfile'
   workflow_dispatch:
     inputs:
       build-base-images:
@@ -49,11 +51,69 @@ permissions:
 
 jobs:
   # ============================================
+  # Stage 0: Build toolchain images (these are cached aggressively)
+  # ============================================
+  build-toolchains:
+    name: "Build Toolchain Images"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - toolchain: cc65
+            version: v2.19
+            build-time: high
+          - toolchain: acme
+            version: v0.97.0
+            build-time: low
+          - toolchain: vasm
+            version: v1.9.1
+            build-time: medium
+          - toolchain: sjasmplus
+            version: v1.20.3
+            build-time: low
+          - toolchain: armips
+            version: latest
+            build-time: medium
+          - toolchain: nasm
+            version: v2.16.03
+            build-time: low
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push toolchain
+        uses: docker/build-push-action@v5
+        with:
+          context: ./toolchains/${{ matrix.toolchain }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:${{ matrix.version }}
+            ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:buildcache,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  # ============================================
   # Stage 1: Build root base image
   # ============================================
   build-root-base:
     name: "Root Base Image (Ubuntu + Tools)"
     runs-on: ubuntu-latest
+    needs: build-toolchains
     if: github.event.inputs.build-base-images != 'false'
 
     steps:
