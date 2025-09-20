@@ -73,7 +73,7 @@ jobs:
       matrix:
         include:
           - system-name: code198x-base
-            display-name: Code198x Base
+            display-name: Code Like It's 198x Base
           - system-name: 6502-base
             display-name: 6502 Base
           - system-name: z80-base
@@ -147,10 +147,8 @@ jobs:
             display-name: Sam Coupé
 
           # 68000 Systems
-          - system-name: commodore-amiga-500
-            display-name: Amiga 500
-          - system-name: commodore-amiga-1200
-            display-name: Amiga 1200
+          - system-name: commodore-amiga
+            display-name: Commodore Amiga
           - system-name: atari-st
             display-name: Atari ST
           - system-name: sega-genesis
@@ -286,7 +284,7 @@ jobs:
 
           # Create release notes
           cat > release-notes.md << EOF
-          # Code198x Development Environment $VERSION
+          # Code Like It's 198x Development Environment $VERSION
 
           A comprehensive retro gaming development platform with 64 gaming systems across 12 processor families.
 
@@ -344,7 +342,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.prepare-release.outputs.version }}
-          name: Code198x Development Environment ${{ needs.prepare-release.outputs.version }}
+          name: Code Like It's 198x Development Environment ${{ needs.prepare-release.outputs.version }}
           body_path: ${{ steps.release-notes.outputs.release-notes-file }}
           prerelease: ${{ needs.prepare-release.outputs.is-prerelease == 'true' }}
           generate_release_notes: true
