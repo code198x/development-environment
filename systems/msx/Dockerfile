@@ -10,6 +10,20 @@ LABEL cpu="Z80"
 LABEL manufacturer="Microsoft/ASCII"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy MSX-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/msx /opt/msx-resources
+
+# Set up environment for MSX development
+ENV MSX_INCLUDES=/opt/msx-resources/includes
+ENV MSX_LIBS=/opt/msx-resources/libs
+ENV MSX_EXAMPLES=/opt/msx-resources/examples
+ENV SYSTEM_INCLUDES=/opt/msx-resources/includes
+ENV SYSTEM_LIBS=/opt/msx-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/msx-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

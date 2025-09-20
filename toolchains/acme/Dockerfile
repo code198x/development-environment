@@ -19,7 +19,7 @@ ARG ACME_VERSION
 WORKDIR /build
 
 # Clone and build from GitHub
-RUN git clone --depth=1 --branch v${ACME_VERSION} https://github.com/meonwax/acme.git && \
+RUN git clone --depth=1 https://github.com/meonwax/acme.git && \
     cd acme/src && \
     make && \
     mkdir -p /opt/acme/bin && \
@@ -28,7 +28,7 @@ RUN git clone --depth=1 --branch v${ACME_VERSION} https://github.com/meonwax/acm
     mkdir -p /opt/acme/lib && \
     cp -r ../ACME_Lib/* /opt/acme/lib/ 2>/dev/null || true && \
     # Create version file
-    echo "${ACME_VERSION}" > /opt/acme/VERSION
+    echo "latest" > /opt/acme/VERSION
 
 # Test the build
 RUN /opt/acme/bin/acme --version

@@ -11,6 +11,20 @@ LABEL manufacturer="MITS"
 LABEL significance="Started the personal computer revolution"
 
 # asm8080 is included in base image
+
+USER root
+
+# Copy Altair 8800-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/altair-8800 /opt/altair-resources
+
+# Set up environment for Altair 8800 development
+ENV ALTAIR_INCLUDES=/opt/altair-resources/includes
+ENV ALTAIR_LIBS=/opt/altair-resources/libs
+ENV ALTAIR_EXAMPLES=/opt/altair-resources/examples
+ENV SYSTEM_INCLUDES=/opt/altair-resources/includes
+ENV SYSTEM_LIBS=/opt/altair-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/altair-resources/examples
+
 USER code198x
 
 # Set asm8080 as the entrypoint

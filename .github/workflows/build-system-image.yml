@@ -95,7 +95,7 @@ jobs:
       - name: Build and push ${{ inputs.display-name }}
         uses: docker/build-push-action@v5
         with:
-          context: ${{ endsWith(inputs.system-name, '-base') && format('./base-images/{0}', inputs.system-name) || format('./systems/{0}', inputs.system-name) }}
+          context: .
           file: ${{ endsWith(inputs.system-name, '-base') && format('./base-images/{0}/Dockerfile', inputs.system-name) || format('./systems/{0}/Dockerfile', inputs.system-name) }}
           platforms: linux/amd64,linux/arm64
           push: true

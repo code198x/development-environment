@@ -12,6 +12,20 @@ LABEL emulator="Mednafen/SSF/Kronos"
 LABEL significance="Complex dual-CPU 32-bit system"
 
 # SuperH tools are included in base image
+
+USER root
+
+# Copy Sega Saturn-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sega-saturn /opt/saturn-resources
+
+# Set up environment for Sega Saturn development
+ENV SATURN_INCLUDES=/opt/saturn-resources/includes
+ENV SATURN_LIBS=/opt/saturn-resources/libs
+ENV SATURN_EXAMPLES=/opt/saturn-resources/examples
+ENV SYSTEM_INCLUDES=/opt/saturn-resources/includes
+ENV SYSTEM_LIBS=/opt/saturn-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/saturn-resources/examples
+
 USER code198x
 
 # Set SH assembler as the entrypoint

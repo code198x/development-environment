@@ -12,6 +12,20 @@ LABEL emulator="simh"
 LABEL significance="Professional S-100 bus system"
 
 # asm8080 is included in base image
+
+USER root
+
+# Copy CompuPro System 8/16-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/compupro-system816 /opt/compupro-resources
+
+# Set up environment for CompuPro System 8/16 development
+ENV COMPUPRO_INCLUDES=/opt/compupro-resources/includes
+ENV COMPUPRO_LIBS=/opt/compupro-resources/libs
+ENV COMPUPRO_EXAMPLES=/opt/compupro-resources/examples
+ENV SYSTEM_INCLUDES=/opt/compupro-resources/includes
+ENV SYSTEM_LIBS=/opt/compupro-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/compupro-resources/examples
+
 USER code198x
 
 # Set asm8080 as the entrypoint

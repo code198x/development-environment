@@ -11,6 +11,20 @@ LABEL manufacturer="Commodore"
 LABEL emulator="VICE (xpet)"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Commodore PET-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/commodore-pet /opt/pet-resources
+
+# Set up environment for Commodore PET development
+ENV PET_INCLUDES=/opt/pet-resources/includes
+ENV PET_LIBS=/opt/pet-resources/libs
+ENV PET_EXAMPLES=/opt/pet-resources/examples
+ENV SYSTEM_INCLUDES=/opt/pet-resources/includes
+ENV SYSTEM_LIBS=/opt/pet-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/pet-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

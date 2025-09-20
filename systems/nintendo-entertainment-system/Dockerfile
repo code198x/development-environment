@@ -15,9 +15,20 @@ USER root
 RUN mkdir -p /opt/6502-tools/share/cc65/cfg/
 COPY nes.cfg /opt/6502-tools/share/cc65/cfg/
 
+# Copy NES-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nintendo-nes /opt/nes-resources
+
 # Create wrapper script for easier usage
 RUN echo '#!/bin/bash\nif [ "$1" = "build" ]; then\n  ca65 main.asm -o main.o && ld65 main.o -C /opt/6502-tools/share/cc65/cfg/nes.cfg -o program.nes\nelse\n  ca65 "$@"\nfi' > /opt/6502-tools/bin/nes-build && \
     chmod +x /opt/6502-tools/bin/nes-build
+
+# Set up environment for NES development
+ENV NES_INCLUDES=/opt/nes-resources/includes
+ENV NES_LIBS=/opt/nes-resources/libs
+ENV NES_EXAMPLES=/opt/nes-resources/examples
+ENV SYSTEM_INCLUDES=/opt/nes-resources/includes
+ENV SYSTEM_LIBS=/opt/nes-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/nes-resources/examples
 
 USER code198x
 

@@ -1,24 +1,26 @@
-# Base image for Z80-family processors
-# Uses pre-built toolchain images for fast assembly
-FROM ghcr.io/code198x/code198x-base:latest
+# Build stage for additional tools
+FROM ghcr.io/code198x/code198x-base:latest AS builder
 
 USER root
 
-# Install runtime dependencies
+# Install build dependencies for pasmo
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
-    libstdc++6 \
+    build-essential \
+    wget \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy pre-built tools from toolchain images
-COPY --from=ghcr.io/code198x/toolchains/sjasmplus:v1.20.3 /opt/sjasmplus /opt/z80-tools/sjasmplus
-COPY --from=ghcr.io/code198x/toolchains/vasm:v1.9.1 /opt/vasm/bin/vasmz80_oldstyle /opt/z80-tools/bin/vasmz80
+COPY --from=ghcr.io/code198x/toolchains/sjasmplus:latest /opt/sjasmplus /opt/z80-tools/sjasmplus
+RUN mkdir -p /opt/z80-tools/bin
+COPY --from=ghcr.io/code198x/toolchains/vasm:latest /opt/vasm/bin/vasmz80_oldstyle /opt/z80-tools/bin/vasmz80
 
-# Note: pasmo could be added as another toolchain if needed
-# For now, keeping inline build for this smaller tool
+# Build pasmo assembler
+ARG PASMO_VERSION=0.5.5
 RUN cd /tmp && \
-    wget -q http://pasmo.speccy.org/bin/pasmo-0.5.5.tar.gz && \
+    wget -q http://pasmo.speccy.org/bin/pasmo-${PASMO_VERSION}.tar.gz && \
     tar -xzf pasmo-${PASMO_VERSION}.tar.gz && \
     cd pasmo-${PASMO_VERSION} && \
     cp /usr/share/misc/config.guess . && \

@@ -12,6 +12,20 @@ LABEL emulator="Gens/BlastEm/MAME"
 LABEL significance="Genesis add-on with 32-bit processors"
 
 # SuperH tools are included in base image
+
+USER root
+
+# Copy Sega 32X-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sega-32x /opt/32x-resources
+
+# Set up environment for Sega 32X development
+ENV 32X_INCLUDES=/opt/32x-resources/includes
+ENV 32X_LIBS=/opt/32x-resources/libs
+ENV 32X_EXAMPLES=/opt/32x-resources/examples
+ENV SYSTEM_INCLUDES=/opt/32x-resources/includes
+ENV SYSTEM_LIBS=/opt/32x-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/32x-resources/examples
+
 USER code198x
 
 # Set SH assembler as the entrypoint

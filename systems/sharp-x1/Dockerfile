@@ -12,6 +12,20 @@ LABEL emulator="X1EMU"
 LABEL significance="Popular Japanese computer with rich game library"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy Sharp X1-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sharp-x1 /opt/x1-resources
+
+# Set up environment for Sharp X1 development
+ENV X1_INCLUDES=/opt/x1-resources/includes
+ENV X1_LIBS=/opt/x1-resources/libs
+ENV X1_EXAMPLES=/opt/x1-resources/examples
+ENV SYSTEM_INCLUDES=/opt/x1-resources/includes
+ENV SYSTEM_LIBS=/opt/x1-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/x1-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

@@ -12,6 +12,20 @@ LABEL emulator="XRoar"
 LABEL significance="Popular in UK, based on CoCo design"
 
 # lwasm is included in base image
+
+USER root
+
+# Copy Dragon 32-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/dragon-32 /opt/dragon32-resources
+
+# Set up environment for Dragon 32 development
+ENV DRAGON32_INCLUDES=/opt/dragon32-resources/includes
+ENV DRAGON32_LIBS=/opt/dragon32-resources/libs
+ENV DRAGON32_EXAMPLES=/opt/dragon32-resources/examples
+ENV SYSTEM_INCLUDES=/opt/dragon32-resources/includes
+ENV SYSTEM_LIBS=/opt/dragon32-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/dragon32-resources/examples
+
 USER code198x
 
 # Set lwasm as the entrypoint

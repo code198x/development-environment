@@ -10,6 +10,20 @@ LABEL cpu="LR35902"
 LABEL manufacturer="Nintendo"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy Game Boy-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nintendo-game-boy /opt/gameboy-resources
+
+# Set up environment for Game Boy development
+ENV GB_INCLUDES=/opt/gameboy-resources/includes
+ENV GB_LIBS=/opt/gameboy-resources/libs
+ENV GB_EXAMPLES=/opt/gameboy-resources/examples
+ENV SYSTEM_INCLUDES=/opt/gameboy-resources/includes
+ENV SYSTEM_LIBS=/opt/gameboy-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/gameboy-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

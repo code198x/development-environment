@@ -12,6 +12,20 @@ LABEL emulator="DuckStation/PCSX-Redux/Mednafen"
 LABEL significance="Brought 3D gaming to the masses"
 
 # MIPS tools are included in base image
+
+USER root
+
+# Copy PlayStation-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sony-playstation /opt/psx-resources
+
+# Set up environment for PlayStation development
+ENV PSX_INCLUDES=/opt/psx-resources/includes
+ENV PSX_LIBS=/opt/psx-resources/libs
+ENV PSX_EXAMPLES=/opt/psx-resources/examples
+ENV SYSTEM_INCLUDES=/opt/psx-resources/includes
+ENV SYSTEM_LIBS=/opt/psx-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/psx-resources/examples
+
 USER code198x
 
 # Set MIPS assembler as the entrypoint

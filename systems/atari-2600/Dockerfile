@@ -9,6 +9,20 @@ LABEL year="1977"
 LABEL cpu="6507"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Atari 2600-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/atari-2600 /opt/atari2600-resources
+
+# Set up environment for Atari 2600 development
+ENV ATARI2600_INCLUDES=/opt/atari2600-resources/includes
+ENV ATARI2600_LIBS=/opt/atari2600-resources/libs
+ENV ATARI2600_EXAMPLES=/opt/atari2600-resources/examples
+ENV SYSTEM_INCLUDES=/opt/atari2600-resources/includes
+ENV SYSTEM_LIBS=/opt/atari2600-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/atari2600-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

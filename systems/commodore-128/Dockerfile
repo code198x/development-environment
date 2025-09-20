@@ -12,6 +12,20 @@ LABEL emulator="VICE (x128)"
 LABEL significance="Last 8-bit Commodore with dual CPUs"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Commodore 128-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/commodore-128 /opt/c128-resources
+
+# Set up environment for Commodore 128 development
+ENV C128_INCLUDES=/opt/c128-resources/includes
+ENV C128_LIBS=/opt/c128-resources/libs
+ENV C128_EXAMPLES=/opt/c128-resources/examples
+ENV SYSTEM_INCLUDES=/opt/c128-resources/includes
+ENV SYSTEM_LIBS=/opt/c128-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/c128-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

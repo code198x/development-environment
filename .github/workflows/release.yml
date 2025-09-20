@@ -83,6 +83,12 @@ jobs:
           - toolchain: sjasmplus
             version: v1.20.3
             build-time: low
+          - toolchain: armips
+            version: latest
+            build-time: medium
+          - toolchain: nasm
+            version: v2.16.03
+            build-time: low
     runs-on: ubuntu-latest
 
     steps:

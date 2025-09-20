@@ -12,6 +12,20 @@ LABEL emulator="Oricutron"
 LABEL significance="Popular in France and UK"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Oric Atmos-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/oric-atmos /opt/atmos-resources
+
+# Set up environment for Oric Atmos development
+ENV ATMOS_INCLUDES=/opt/atmos-resources/includes
+ENV ATMOS_LIBS=/opt/atmos-resources/libs
+ENV ATMOS_EXAMPLES=/opt/atmos-resources/examples
+ENV SYSTEM_INCLUDES=/opt/atmos-resources/includes
+ENV SYSTEM_LIBS=/opt/atmos-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/atmos-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

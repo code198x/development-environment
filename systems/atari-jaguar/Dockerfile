@@ -12,6 +12,20 @@ LABEL emulator="BigPEmu/MAME"
 LABEL significance="Complex multi-chip architecture, last Atari console"
 
 # vasm is included in base image
+
+USER root
+
+# Copy Atari Jaguar-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/atari-jaguar /opt/jaguar-resources
+
+# Set up environment for Atari Jaguar development
+ENV JAGUAR_INCLUDES=/opt/jaguar-resources/includes
+ENV JAGUAR_LIBS=/opt/jaguar-resources/libs
+ENV JAGUAR_EXAMPLES=/opt/jaguar-resources/examples
+ENV SYSTEM_INCLUDES=/opt/jaguar-resources/includes
+ENV SYSTEM_LIBS=/opt/jaguar-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/jaguar-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

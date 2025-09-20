@@ -12,6 +12,20 @@ LABEL emulator="MAME/FinalBurn Neo"
 LABEL significance="Home console with arcade-perfect games"
 
 # vasm is included in base image
+
+USER root
+
+# Copy Neo Geo AES-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/snk-neogeo-aes /opt/neogeo-aes-resources
+
+# Set up environment for Neo Geo AES development
+ENV NEOGEO_AES_INCLUDES=/opt/neogeo-aes-resources/includes
+ENV NEOGEO_AES_LIBS=/opt/neogeo-aes-resources/libs
+ENV NEOGEO_AES_EXAMPLES=/opt/neogeo-aes-resources/examples
+ENV SYSTEM_INCLUDES=/opt/neogeo-aes-resources/includes
+ENV SYSTEM_LIBS=/opt/neogeo-aes-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/neogeo-aes-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

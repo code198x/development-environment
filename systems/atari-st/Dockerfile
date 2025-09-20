@@ -10,6 +10,20 @@ LABEL cpu="68000"
 LABEL manufacturer="Atari"
 
 # VASM is included in base image
+
+USER root
+
+# Copy Atari ST-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/atari-st /opt/atarist-resources
+
+# Set up environment for Atari ST development
+ENV ATARIST_INCLUDES=/opt/atarist-resources/includes
+ENV ATARIST_LIBS=/opt/atarist-resources/libs
+ENV ATARIST_EXAMPLES=/opt/atarist-resources/examples
+ENV SYSTEM_INCLUDES=/opt/atarist-resources/includes
+ENV SYSTEM_LIBS=/opt/atarist-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/atarist-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

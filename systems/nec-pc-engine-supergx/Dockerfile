@@ -12,6 +12,20 @@ LABEL emulator="Mednafen/MAME"
 LABEL significance="Enhanced graphics capabilities over standard PC Engine"
 
 # ACME is included in base image
+
+USER root
+
+# Copy PC Engine SuperGrafx-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nec-pc-engine-supergx /opt/supergx-resources
+
+# Set up environment for PC Engine SuperGrafx development
+ENV SUPERGX_INCLUDES=/opt/supergx-resources/includes
+ENV SUPERGX_LIBS=/opt/supergx-resources/libs
+ENV SUPERGX_EXAMPLES=/opt/supergx-resources/examples
+ENV SYSTEM_INCLUDES=/opt/supergx-resources/includes
+ENV SYSTEM_LIBS=/opt/supergx-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/supergx-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

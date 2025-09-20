@@ -12,6 +12,20 @@ LABEL emulator="simh"
 LABEL significance="Main competitor to the Altair 8800"
 
 # asm8080 is included in base image
+
+USER root
+
+# Copy IMSAI 8080-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/imsai-8080 /opt/imsai-resources
+
+# Set up environment for IMSAI 8080 development
+ENV IMSAI_INCLUDES=/opt/imsai-resources/includes
+ENV IMSAI_LIBS=/opt/imsai-resources/libs
+ENV IMSAI_EXAMPLES=/opt/imsai-resources/examples
+ENV SYSTEM_INCLUDES=/opt/imsai-resources/includes
+ENV SYSTEM_LIBS=/opt/imsai-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/imsai-resources/examples
+
 USER code198x
 
 # Set asm8080 as the entrypoint

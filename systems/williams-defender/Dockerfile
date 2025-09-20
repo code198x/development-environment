@@ -12,6 +12,20 @@ LABEL emulator="MAME"
 LABEL significance="Advanced scrolling and gameplay mechanics"
 
 # lwasm is included in base image
+
+USER root
+
+# Copy Williams Defender-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/williams-defender /opt/defender-resources
+
+# Set up environment for Williams Defender development
+ENV DEFENDER_INCLUDES=/opt/defender-resources/includes
+ENV DEFENDER_LIBS=/opt/defender-resources/libs
+ENV DEFENDER_EXAMPLES=/opt/defender-resources/examples
+ENV SYSTEM_INCLUDES=/opt/defender-resources/includes
+ENV SYSTEM_LIBS=/opt/defender-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/defender-resources/examples
+
 USER code198x
 
 # Set lwasm as the entrypoint

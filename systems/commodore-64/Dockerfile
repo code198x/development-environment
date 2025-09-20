@@ -7,9 +7,26 @@ LABEL version="1.0.0"
 LABEL system="commodore-64"
 
 # ACME assembler is now included in the base image
-# This image just provides C64-specific configuration
+# This image provides C64-specific configuration and resources
+
+USER root
+
+# Copy C64-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/commodore-64 /opt/c64-resources
+
+# Set up environment for C64 development
+ENV C64_INCLUDES=/opt/c64-resources/includes
+ENV C64_LIBS=/opt/c64-resources/libs
+ENV C64_EXAMPLES=/opt/c64-resources/examples
+ENV ACME_LIB=/opt/c64-resources/includes:/opt/c64-resources/libs
+ENV SYSTEM_INCLUDES=/opt/c64-resources/includes
+ENV SYSTEM_LIBS=/opt/c64-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/c64-resources/examples
 
 USER code198x
+
+# Create a workspace directory
+WORKDIR /workspace
 
 # Set ACME as the entrypoint
 ENTRYPOINT ["acme"]

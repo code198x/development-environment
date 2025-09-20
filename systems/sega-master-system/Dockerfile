@@ -10,6 +10,20 @@ LABEL cpu="Z80"
 LABEL manufacturer="Sega"
 
 # Pasmo is included in base image
+
+USER root
+
+# Copy Sega Master System-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sega-master-system /opt/sms-resources
+
+# Set up environment for Sega Master System development
+ENV SMS_INCLUDES=/opt/sms-resources/includes
+ENV SMS_LIBS=/opt/sms-resources/libs
+ENV SMS_EXAMPLES=/opt/sms-resources/examples
+ENV SYSTEM_INCLUDES=/opt/sms-resources/includes
+ENV SYSTEM_LIBS=/opt/sms-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/sms-resources/examples
+
 USER code198x
 
 # Set pasmo as the entrypoint

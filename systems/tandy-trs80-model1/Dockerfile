@@ -12,6 +12,20 @@ LABEL emulator="sdltrs"
 LABEL significance="First mass-produced home computer"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy TRS-80 Model I-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/tandy-trs80-model1 /opt/trs80-resources
+
+# Set up environment for TRS-80 Model I development
+ENV TRS80_INCLUDES=/opt/trs80-resources/includes
+ENV TRS80_LIBS=/opt/trs80-resources/libs
+ENV TRS80_EXAMPLES=/opt/trs80-resources/examples
+ENV SYSTEM_INCLUDES=/opt/trs80-resources/includes
+ENV SYSTEM_LIBS=/opt/trs80-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/trs80-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

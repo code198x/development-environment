@@ -10,6 +10,20 @@ LABEL cpu="68000"
 LABEL manufacturer="Sharp"
 
 # VASM is included in base image
+
+USER root
+
+# Copy Sharp X68000-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sharp-x68000 /opt/x68000-resources
+
+# Set up environment for Sharp X68000 development
+ENV X68000_INCLUDES=/opt/x68000-resources/includes
+ENV X68000_LIBS=/opt/x68000-resources/libs
+ENV X68000_EXAMPLES=/opt/x68000-resources/examples
+ENV SYSTEM_INCLUDES=/opt/x68000-resources/includes
+ENV SYSTEM_LIBS=/opt/x68000-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/x68000-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

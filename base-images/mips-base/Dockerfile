@@ -22,6 +22,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Create tools directory
 RUN mkdir -p /opt/mips-tools/bin
 
+# Copy pre-built ARMIPS from toolchain image (excellent for MIPS assembly)
+COPY --from=ghcr.io/code198x/toolchains/armips:latest /opt/armips/bin/armips /opt/mips-tools/bin/armips
+
 # Build PSX SDK tools for PlayStation development (optional)
 RUN cd /tmp && \
     git clone --depth=1 https://github.com/Lameguy64/PSn00bSDK.git && \

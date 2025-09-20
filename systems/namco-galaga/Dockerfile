@@ -12,6 +12,20 @@ LABEL emulator="MAME"
 LABEL significance="Advanced multi-CPU coordination"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy Namco Galaga-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/namco-galaga /opt/galaga-resources
+
+# Set up environment for Galaga arcade development
+ENV GALAGA_INCLUDES=/opt/galaga-resources/includes
+ENV GALAGA_LIBS=/opt/galaga-resources/libs
+ENV GALAGA_EXAMPLES=/opt/galaga-resources/examples
+ENV SYSTEM_INCLUDES=/opt/galaga-resources/includes
+ENV SYSTEM_LIBS=/opt/galaga-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/galaga-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

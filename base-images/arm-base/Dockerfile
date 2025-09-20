@@ -16,6 +16,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Create tools directory
 RUN mkdir -p /opt/arm-tools/bin
 
+# Copy pre-built ARMIPS from toolchain image
+COPY --from=ghcr.io/code198x/toolchains/armips:latest /opt/armips/bin/armips /opt/arm-tools/bin/armips
+
 # Install FASMARM for additional ARM assembly
 RUN cd /tmp && \
     wget -q https://flatassembler.net/fasmarm.zip && \

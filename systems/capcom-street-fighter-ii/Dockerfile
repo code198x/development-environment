@@ -12,6 +12,20 @@ LABEL emulator="MAME/FinalBurn Neo"
 LABEL significance="Revolutionary fighting game mechanics"
 
 # vasm is included in base image
+
+USER root
+
+# Copy Street Fighter II-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/capcom-street-fighter-ii /opt/sf2-resources
+
+# Set up environment for Street Fighter II development
+ENV SF2_INCLUDES=/opt/sf2-resources/includes
+ENV SF2_LIBS=/opt/sf2-resources/libs
+ENV SF2_EXAMPLES=/opt/sf2-resources/examples
+ENV SYSTEM_INCLUDES=/opt/sf2-resources/includes
+ENV SYSTEM_LIBS=/opt/sf2-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/sf2-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

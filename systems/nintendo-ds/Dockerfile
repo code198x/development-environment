@@ -12,6 +12,20 @@ LABEL emulator="DeSmuME/melonDS"
 LABEL significance="Dual ARM processors, dual screens, touch input"
 
 # ARM tools are included in base image
+
+USER root
+
+# Copy Nintendo DS-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nintendo-ds /opt/nds-resources
+
+# Set up environment for Nintendo DS development
+ENV NDS_INCLUDES=/opt/nds-resources/includes
+ENV NDS_LIBS=/opt/nds-resources/libs
+ENV NDS_EXAMPLES=/opt/nds-resources/examples
+ENV SYSTEM_INCLUDES=/opt/nds-resources/includes
+ENV SYSTEM_LIBS=/opt/nds-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/nds-resources/examples
+
 USER code198x
 
 # Set ARM assembler as the entrypoint

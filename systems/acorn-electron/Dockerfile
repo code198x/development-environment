@@ -10,6 +10,20 @@ LABEL cpu="6502"
 LABEL manufacturer="Acorn"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Acorn Electron-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/acorn-electron /opt/electron-resources
+
+# Set up environment for Acorn Electron development
+ENV ELECTRON_INCLUDES=/opt/electron-resources/includes
+ENV ELECTRON_LIBS=/opt/electron-resources/libs
+ENV ELECTRON_EXAMPLES=/opt/electron-resources/examples
+ENV SYSTEM_INCLUDES=/opt/electron-resources/includes
+ENV SYSTEM_LIBS=/opt/electron-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/electron-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

@@ -12,6 +12,20 @@ LABEL emulator="Tsugaru/MAME"
 LABEL significance="Advanced multimedia, arcade-perfect ports"
 
 # NASM is included in base image
+
+USER root
+
+# Copy Fujitsu FM Towns-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/fujitsu-fm-towns /opt/fmtowns-resources
+
+# Set up environment for FM Towns development
+ENV FMTOWNS_INCLUDES=/opt/fmtowns-resources/includes
+ENV FMTOWNS_LIBS=/opt/fmtowns-resources/libs
+ENV FMTOWNS_EXAMPLES=/opt/fmtowns-resources/examples
+ENV SYSTEM_INCLUDES=/opt/fmtowns-resources/includes
+ENV SYSTEM_LIBS=/opt/fmtowns-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/fmtowns-resources/examples
+
 USER code198x
 
 # Set NASM as the entrypoint

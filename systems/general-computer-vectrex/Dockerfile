@@ -12,6 +12,20 @@ LABEL emulator="ParaJVE/MAME"
 LABEL significance="Only commercial vector graphics home console"
 
 # lwasm is included in base image
+
+USER root
+
+# Copy Vectrex-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/general-computer-vectrex /opt/vectrex-resources
+
+# Set up environment for Vectrex development
+ENV VECTREX_INCLUDES=/opt/vectrex-resources/includes
+ENV VECTREX_LIBS=/opt/vectrex-resources/libs
+ENV VECTREX_EXAMPLES=/opt/vectrex-resources/examples
+ENV SYSTEM_INCLUDES=/opt/vectrex-resources/includes
+ENV SYSTEM_LIBS=/opt/vectrex-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/vectrex-resources/examples
+
 USER code198x
 
 # Set lwasm as the entrypoint

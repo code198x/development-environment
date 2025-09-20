@@ -12,6 +12,20 @@ LABEL emulator="MAME"
 LABEL significance="Gradius series, advanced sprite capabilities"
 
 # vasm is included in base image
+
+USER root
+
+# Copy Konami GX400-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/konami-gx400 /opt/gx400-resources
+
+# Set up environment for Konami GX400 development
+ENV GX400_INCLUDES=/opt/gx400-resources/includes
+ENV GX400_LIBS=/opt/gx400-resources/libs
+ENV GX400_EXAMPLES=/opt/gx400-resources/examples
+ENV SYSTEM_INCLUDES=/opt/gx400-resources/includes
+ENV SYSTEM_LIBS=/opt/gx400-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/gx400-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

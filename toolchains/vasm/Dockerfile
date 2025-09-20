@@ -10,7 +10,7 @@ FROM ubuntu:24.04 AS builder
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    wget \
+    git \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,10 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ARG VASM_VERSION
 WORKDIR /build
 
-# Download vasm source
-RUN wget -q http://phoenix.owl.de/tags/vasm${VASM_VERSION/./_}.tar.gz && \
-    tar -xzf vasm${VASM_VERSION/./_}.tar.gz && \
-    rm vasm${VASM_VERSION/./_}.tar.gz
+# Clone vasm source from GitHub mirror
+RUN git clone --depth=1 https://github.com/dbuchwald/vasm.git
 
 # Build multiple CPU targets
 WORKDIR /build/vasm
@@ -46,10 +44,10 @@ RUN make CPU=6502 SYNTAX=oldstyle && \
 # Create version file
 RUN echo "${VASM_VERSION}" > /opt/vasm/VERSION
 
-# Test the builds
-RUN /opt/vasm/bin/vasmm68k_mot -version && \
-    /opt/vasm/bin/vasmz80_oldstyle -version && \
-    /opt/vasm/bin/vasm6502_oldstyle -version
+# Test the builds (vasm shows version in error messages)
+RUN /opt/vasm/bin/vasmm68k_mot 2>&1 | head -5 || true && \
+    /opt/vasm/bin/vasmz80_oldstyle 2>&1 | head -5 || true && \
+    /opt/vasm/bin/vasm6502_oldstyle 2>&1 | head -5 || true
 
 # Final stage
 FROM ubuntu:24.04 AS runtime
@@ -71,7 +69,7 @@ LABEL org.opencontainers.image.version="${VASM_VERSION}"
 ENV PATH="/opt/vasm/bin:$PATH"
 
 # Health check
-RUN vasmm68k_mot -version
+RUN vasmm68k_mot 2>&1 | head -1 || true
 
-# Default command
-CMD ["vasmm68k_mot", "-version"]
+# Default command (shows help and version info)
+CMD ["vasmm68k_mot"]

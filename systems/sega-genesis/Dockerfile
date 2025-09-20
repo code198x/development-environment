@@ -12,6 +12,20 @@ LABEL emulator="Gens/BlastEm/MAME"
 LABEL significance="Major 16-bit console with excellent 2D capabilities"
 
 # vasm is included in base image
+
+USER root
+
+# Copy Sega Genesis-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sega-genesis /opt/genesis-resources
+
+# Set up environment for Genesis development
+ENV GENESIS_INCLUDES=/opt/genesis-resources/includes
+ENV GENESIS_LIBS=/opt/genesis-resources/libs
+ENV GENESIS_EXAMPLES=/opt/genesis-resources/examples
+ENV SYSTEM_INCLUDES=/opt/genesis-resources/includes
+ENV SYSTEM_LIBS=/opt/genesis-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/genesis-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

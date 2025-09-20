@@ -12,6 +12,20 @@ LABEL emulator="Mednafen/Beetle Cygne"
 LABEL significance="Gunpei Yokoi's final handheld design"
 
 # NASM is included in base image
+
+USER root
+
+# Copy WonderSwan-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/bandai-wonderswan /opt/wonderswan-resources
+
+# Set up environment for WonderSwan development
+ENV WONDERSWAN_INCLUDES=/opt/wonderswan-resources/includes
+ENV WONDERSWAN_LIBS=/opt/wonderswan-resources/libs
+ENV WONDERSWAN_EXAMPLES=/opt/wonderswan-resources/examples
+ENV SYSTEM_INCLUDES=/opt/wonderswan-resources/includes
+ENV SYSTEM_LIBS=/opt/wonderswan-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/wonderswan-resources/examples
+
 USER code198x
 
 # Set NASM as the entrypoint

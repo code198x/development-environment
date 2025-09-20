@@ -12,6 +12,20 @@ LABEL emulator="EP128EMU"
 LABEL significance="Advanced graphics and sound capabilities"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy Enterprise 128-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/enterprise-128 /opt/enterprise128-resources
+
+# Set up environment for Enterprise 128 development
+ENV ENTERPRISE128_INCLUDES=/opt/enterprise128-resources/includes
+ENV ENTERPRISE128_LIBS=/opt/enterprise128-resources/libs
+ENV ENTERPRISE128_EXAMPLES=/opt/enterprise128-resources/examples
+ENV SYSTEM_INCLUDES=/opt/enterprise128-resources/includes
+ENV SYSTEM_LIBS=/opt/enterprise128-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/enterprise128-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

@@ -12,6 +12,20 @@ LABEL emulator="Flycast/Redream"
 LABEL significance="Advanced graphics, built-in networking"
 
 # SuperH tools are included in base image
+
+USER root
+
+# Copy Sega Dreamcast-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/sega-dreamcast /opt/dreamcast-resources
+
+# Set up environment for Sega Dreamcast development
+ENV DREAMCAST_INCLUDES=/opt/dreamcast-resources/includes
+ENV DREAMCAST_LIBS=/opt/dreamcast-resources/libs
+ENV DREAMCAST_EXAMPLES=/opt/dreamcast-resources/examples
+ENV SYSTEM_INCLUDES=/opt/dreamcast-resources/includes
+ENV SYSTEM_LIBS=/opt/dreamcast-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/dreamcast-resources/examples
+
 USER code198x
 
 # Set SH assembler as the entrypoint

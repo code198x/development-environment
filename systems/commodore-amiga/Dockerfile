@@ -9,6 +9,19 @@ LABEL system="commodore-amiga"
 # VASM is now included in the base image
 # This image provides Amiga-specific configuration
 
+USER root
+
+# Copy Amiga-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/commodore-amiga /opt/amiga-resources
+
+# Set up environment for Amiga development
+ENV AMIGA_INCLUDES=/opt/amiga-resources/includes
+ENV AMIGA_LIBS=/opt/amiga-resources/libs
+ENV AMIGA_EXAMPLES=/opt/amiga-resources/examples
+ENV SYSTEM_INCLUDES=/opt/amiga-resources/includes
+ENV SYSTEM_LIBS=/opt/amiga-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/amiga-resources/examples
+
 USER code198x
 
 # Set vasm as the entrypoint

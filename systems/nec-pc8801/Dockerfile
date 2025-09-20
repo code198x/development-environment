@@ -12,6 +12,20 @@ LABEL emulator="M88/MAME"
 LABEL significance="Massive Japanese game library, industry standard"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy NEC PC-8801-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nec-pc8801 /opt/pc8801-resources
+
+# Set up environment for PC-8801 development
+ENV PC8801_INCLUDES=/opt/pc8801-resources/includes
+ENV PC8801_LIBS=/opt/pc8801-resources/libs
+ENV PC8801_EXAMPLES=/opt/pc8801-resources/examples
+ENV SYSTEM_INCLUDES=/opt/pc8801-resources/includes
+ENV SYSTEM_LIBS=/opt/pc8801-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/pc8801-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

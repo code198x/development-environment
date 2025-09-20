@@ -12,6 +12,20 @@ LABEL emulator="Mednafen/MAME"
 LABEL significance="Unique 6502-based console with advanced graphics capabilities"
 
 # ACME is included in base image
+
+USER root
+
+# Copy TurboGrafx-16-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nec-turbografx16 /opt/turbografx16-resources
+
+# Set up environment for TurboGrafx-16 development
+ENV TURBOGRAFX16_INCLUDES=/opt/turbografx16-resources/includes
+ENV TURBOGRAFX16_LIBS=/opt/turbografx16-resources/libs
+ENV TURBOGRAFX16_EXAMPLES=/opt/turbografx16-resources/examples
+ENV SYSTEM_INCLUDES=/opt/turbografx16-resources/includes
+ENV SYSTEM_LIBS=/opt/turbografx16-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/turbografx16-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

@@ -10,6 +10,20 @@ LABEL cpu="6502"
 LABEL manufacturer="Acorn"
 
 # ACME is included in base image
+
+USER root
+
+# Copy BBC Micro-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/acorn-bbc-micro /opt/bbcmicro-resources
+
+# Set up environment for BBC Micro development
+ENV BBCMICRO_INCLUDES=/opt/bbcmicro-resources/includes
+ENV BBCMICRO_LIBS=/opt/bbcmicro-resources/libs
+ENV BBCMICRO_EXAMPLES=/opt/bbcmicro-resources/examples
+ENV SYSTEM_INCLUDES=/opt/bbcmicro-resources/includes
+ENV SYSTEM_LIBS=/opt/bbcmicro-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/bbcmicro-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

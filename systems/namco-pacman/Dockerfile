@@ -12,6 +12,20 @@ LABEL emulator="MAME"
 LABEL significance="Most iconic arcade game of all time"
 
 # sjasmplus is included in base image
+
+USER root
+
+# Copy Namco Pac-Man-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/namco-pacman /opt/pacman-resources
+
+# Set up environment for Pac-Man arcade development
+ENV PACMAN_INCLUDES=/opt/pacman-resources/includes
+ENV PACMAN_LIBS=/opt/pacman-resources/libs
+ENV PACMAN_EXAMPLES=/opt/pacman-resources/examples
+ENV SYSTEM_INCLUDES=/opt/pacman-resources/includes
+ENV SYSTEM_LIBS=/opt/pacman-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/pacman-resources/examples
+
 USER code198x
 
 # Set sjasmplus as the entrypoint

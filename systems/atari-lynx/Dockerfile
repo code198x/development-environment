@@ -12,6 +12,20 @@ LABEL emulator="Mednafen/MAME"
 LABEL significance="Advanced handheld with hardware sprite scaling and rotation"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Atari Lynx-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/atari-lynx /opt/lynx-resources
+
+# Set up environment for Atari Lynx development
+ENV LYNX_INCLUDES=/opt/lynx-resources/includes
+ENV LYNX_LIBS=/opt/lynx-resources/libs
+ENV LYNX_EXAMPLES=/opt/lynx-resources/examples
+ENV SYSTEM_INCLUDES=/opt/lynx-resources/includes
+ENV SYSTEM_LIBS=/opt/lynx-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/lynx-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint

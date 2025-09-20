@@ -12,6 +12,20 @@ LABEL emulator="NeoPop/MAME/Mednafen"
 LABEL significance="SNK's excellent handheld with great fighting games"
 
 # ngpasm is included in base image
+
+USER root
+
+# Copy Neo Geo Pocket-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/snk-neogeo-pocket /opt/neogeopocket-resources
+
+# Set up environment for Neo Geo Pocket development
+ENV NEOGEOPOCKET_INCLUDES=/opt/neogeopocket-resources/includes
+ENV NEOGEOPOCKET_LIBS=/opt/neogeopocket-resources/libs
+ENV NEOGEOPOCKET_EXAMPLES=/opt/neogeopocket-resources/examples
+ENV SYSTEM_INCLUDES=/opt/neogeopocket-resources/includes
+ENV SYSTEM_LIBS=/opt/neogeopocket-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/neogeopocket-resources/examples
+
 USER code198x
 
 # Set ngpasm as the entrypoint

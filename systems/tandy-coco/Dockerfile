@@ -11,6 +11,20 @@ LABEL manufacturer="Tandy/RadioShack"
 LABEL nickname="CoCo"
 
 # lwasm is included in base image
+
+USER root
+
+# Copy Tandy CoCo-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/tandy-coco /opt/coco-resources
+
+# Set up environment for Tandy CoCo development
+ENV COCO_INCLUDES=/opt/coco-resources/includes
+ENV COCO_LIBS=/opt/coco-resources/libs
+ENV COCO_EXAMPLES=/opt/coco-resources/examples
+ENV SYSTEM_INCLUDES=/opt/coco-resources/includes
+ENV SYSTEM_LIBS=/opt/coco-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/coco-resources/examples
+
 USER code198x
 
 # Set lwasm as the entrypoint

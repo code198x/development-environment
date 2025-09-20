@@ -12,6 +12,20 @@ LABEL emulator="Neko Project II/MAME"
 LABEL significance="Dominant Japanese PC gaming platform"
 
 # NASM is included in base image
+
+USER root
+
+# Copy NEC PC-9801-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/nec-pc9801 /opt/pc9801-resources
+
+# Set up environment for PC-9801 development
+ENV PC9801_INCLUDES=/opt/pc9801-resources/includes
+ENV PC9801_LIBS=/opt/pc9801-resources/libs
+ENV PC9801_EXAMPLES=/opt/pc9801-resources/examples
+ENV SYSTEM_INCLUDES=/opt/pc9801-resources/includes
+ENV SYSTEM_LIBS=/opt/pc9801-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/pc9801-resources/examples
+
 USER code198x
 
 # Set NASM as the entrypoint

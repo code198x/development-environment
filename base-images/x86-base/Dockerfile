@@ -1,5 +1,4 @@
 # Version pinning for reproducible builds
-ARG NASM_VERSION=2.16.01
 ARG DJGPP_VERSION=12.2.0
 
 # Base image for x86 processors (DOS, early Windows games)
@@ -18,17 +17,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     unzip \
     bzip2
 
-# Re-declare ARGs for this stage
-ARG NASM_VERSION
+# Create tools directory
+RUN mkdir -p /opt/x86-tools/bin
 
-# Install NASM for x86 assembly
-RUN cd /tmp && \
-    wget -q https://www.nasm.us/pub/nasm/releasebuilds/${NASM_VERSION}/nasm-${NASM_VERSION}.tar.bz2 && \
-    tar -xf nasm-${NASM_VERSION}.tar.bz2 && \
-    cd nasm-${NASM_VERSION} && \
-    ./configure --prefix=/opt/x86-tools && \
-    make -j$(nproc) && \
-    make install
+# Copy pre-built NASM from toolchain image
+COPY --from=ghcr.io/code198x/toolchains/nasm:latest /opt/nasm/bin/nasm /opt/x86-tools/bin/nasm
+COPY --from=ghcr.io/code198x/toolchains/nasm:latest /opt/nasm/bin/ndisasm /opt/x86-tools/bin/ndisasm
 
 # Install YASM as alternative assembler
 RUN cd /tmp && \

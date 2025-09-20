@@ -12,6 +12,20 @@ LABEL emulator="VICE (xplus4)"
 LABEL significance="Part of Commodore's unsuccessful budget line"
 
 # ACME is included in base image
+
+USER root
+
+# Copy Commodore Plus/4-specific resources (headers, libs, examples)
+COPY --chown=code198x:code198x resources/commodore-plus4 /opt/plus4-resources
+
+# Set up environment for Commodore Plus/4 development
+ENV PLUS4_INCLUDES=/opt/plus4-resources/includes
+ENV PLUS4_LIBS=/opt/plus4-resources/libs
+ENV PLUS4_EXAMPLES=/opt/plus4-resources/examples
+ENV SYSTEM_INCLUDES=/opt/plus4-resources/includes
+ENV SYSTEM_LIBS=/opt/plus4-resources/libs
+ENV SYSTEM_EXAMPLES=/opt/plus4-resources/examples
+
 USER code198x
 
 # Set ACME as the entrypoint
