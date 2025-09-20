@@ -3,15 +3,74 @@
 Docker-based assembler toolchain for retro game development across classic 8-bit and 16-bit systems.
 
 ![Build Status](https://github.com/code198x/development-environment/actions/workflows/docker-build.yml/badge.svg)
+![Latest Release](https://img.shields.io/github/v/release/code198x/development-environment)
+
+**Current Version:** v1.0.0 (Released: September 20, 2025)
+
+## 📌 Versioning
+
+**For Educators:** Use specific version tags (e.g., `:v1.0.0`) to ensure consistency across semesters.
+
+```bash
+# Stable version (recommended for courses)
+docker pull ghcr.io/code198x/commodore-64:v1.0.0
+
+# Latest development version
+docker pull ghcr.io/code198x/commodore-64:latest
+```
 
 ## 🎮 Supported Systems
 
 | System | Assembler | GHCR Image | Docker Hub |
 |--------|-----------|------------|------------|
-| Commodore 64 | ACME | `ghcr.io/code198x/commodore-64:latest` | `code198x/commodore-64:latest` |
-| ZX Spectrum | SjASMPlus | `ghcr.io/code198x/sinclair-zx-spectrum:latest` | `code198x/sinclair-zx-spectrum:latest` |
-| NES | cc65 | `ghcr.io/code198x/nintendo-entertainment-system:latest` | `code198x/nintendo-entertainment-system:latest` |
-| Amiga | VASM | `ghcr.io/code198x/commodore-amiga:latest` | `code198x/commodore-amiga:latest` |
+| Commodore 64 | ACME | `ghcr.io/code198x/commodore-64:v1.0.0` | `code198x/commodore-64:v1.0.0` |
+| ZX Spectrum | SjASMPlus | `ghcr.io/code198x/sinclair-zx-spectrum:v1.0.0` | `code198x/sinclair-zx-spectrum:v1.0.0` |
+| NES | cc65 | `ghcr.io/code198x/nintendo-entertainment-system:v1.0.0` | `code198x/nintendo-entertainment-system:v1.0.0` |
+| Amiga | VASM | `ghcr.io/code198x/commodore-amiga:v1.0.0` | `code198x/commodore-amiga:v1.0.0` |
+
+### Complete System List (64 Systems)
+
+<details>
+<summary>Click to expand full list of supported systems</summary>
+
+#### 6502 Family
+- Commodore 64, 128, PET, Plus/4
+- Apple II
+- Nintendo NES, Donkey Kong (Arcade)
+- Atari 2600, 800
+- Acorn BBC Micro
+
+#### Z80 Family
+- Sinclair ZX Spectrum, ZX81
+- Amstrad CPC
+- MSX
+- Sam Coupé
+- Enterprise 128
+- Oric-1, Oric Atmos
+- Thomson MO5
+- Coleco Adam
+- Sega Game Gear
+
+#### 68000 Family
+- Commodore Amiga
+- Atari ST, Lynx, Jaguar
+- Sega Genesis, 32X
+- SNK Neo Geo (MVS/AES)
+- Sharp X68000
+- Capcom Street Fighter II (CPS1)
+
+#### Other Processor Families
+- **8080**: Altair 8800, IMSAI 8080
+- **6809**: Dragon 32/64, TRS-80 Model I, Vectrex, Williams Defender
+- **MIPS**: Sony PlayStation, Nintendo 64
+- **ARM**: Game Boy Advance, Nintendo DS, 3DO
+- **SuperH**: Sega Saturn, Dreamcast
+- **x86**: FM Towns, PC-9801, PC-8801, CompuPro System 816, Sharp X1
+- **V30**: Bandai WonderSwan, TurboGrafx-16, PC Engine SuperGrafx
+- **TLCS-900H**: Neo Geo Pocket
+- **Arcade**: Asteroids, Tempest, Pac-Man, Galaga, Konami GX400
+
+</details>
 
 ## 🚀 Quick Start
 
@@ -19,20 +78,20 @@ Docker-based assembler toolchain for retro game development across classic 8-bit
 
 ```bash
 # Commodore 64
-docker pull ghcr.io/code198x/commodore-64:latest
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-64:latest -o program.prg main.asm
+docker pull ghcr.io/code198x/commodore-64:v1.0.0
+docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-64:v1.0.0 -o program.prg main.asm
 
 # ZX Spectrum
-docker pull ghcr.io/code198x/sinclair-zx-spectrum:latest
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/sinclair-zx-spectrum:latest main.asm
+docker pull ghcr.io/code198x/sinclair-zx-spectrum:v1.0.0
+docker run --rm -v $(pwd):/workspace ghcr.io/code198x/sinclair-zx-spectrum:v1.0.0 main.asm
 
 # NES
-docker pull ghcr.io/code198x/nintendo-entertainment-system:latest
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/nintendo-entertainment-system:latest main.asm -o main.o
+docker pull ghcr.io/code198x/nintendo-entertainment-system:v1.0.0
+docker run --rm -v $(pwd):/workspace ghcr.io/code198x/nintendo-entertainment-system:v1.0.0 main.asm -o main.o
 
 # Amiga
-docker pull ghcr.io/code198x/commodore-amiga:latest
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-amiga:latest -Fhunkexe -o program main.asm
+docker pull ghcr.io/code198x/commodore-amiga:v1.0.0
+docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-amiga:v1.0.0 -Fhunkexe -o program main.asm
 ```
 
 ### Using Docker Hub (Alternative)
