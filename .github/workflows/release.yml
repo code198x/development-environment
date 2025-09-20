@@ -64,10 +64,57 @@ jobs:
           echo "is-prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
           echo "Release version: $VERSION (prerelease: $IS_PRERELEASE)"
 
-  # Build base images with version tags
+  # Build toolchain images first (these are cached aggressively)
+  build-toolchains:
+    name: Build Toolchain Images
+    needs: prepare-release
+    strategy:
+      matrix:
+        include:
+          - toolchain: cc65
+            version: v2.19
+            build-time: high  # This one takes 35+ minutes
+          - toolchain: acme
+            version: v0.97.0
+            build-time: low
+          - toolchain: vasm
+            version: v1.9.1
+            build-time: medium
+          - toolchain: sjasmplus
+            version: v1.20.3
+            build-time: low
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push toolchain
+        uses: docker/build-push-action@v5
+        with:
+          context: ./toolchains/${{ matrix.toolchain }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:${{ matrix.version }}
+            ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:latest
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:buildcache,mode=max
+          platforms: linux/amd64,linux/arm64
+
+  # Build base images with version tags (now using pre-built toolchains)
   build-base-images:
     name: Build Base Images
-    needs: prepare-release
+    needs: [prepare-release, build-toolchains]  # Wait for toolchains
     uses: ./.github/workflows/build-system-image.yml
     strategy:
       matrix:

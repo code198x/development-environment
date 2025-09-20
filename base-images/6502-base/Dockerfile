@@ -1,46 +1,6 @@
-# Version pinning for reproducible builds (must be before FROM)
-ARG ACME_COMMIT=99fae48
-ARG CC65_VERSION=V2.19
-
 # Base image for 6502-family processors
-# Multi-stage build for smaller runtime image
-FROM ghcr.io/code198x/code198x-base:latest AS builder
-
-USER root
-
-# Install build dependencies
-# Use cache mount for apt to improve caching
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    zlib1g-dev \
-    libpng-dev \
-    wget
-
-# Re-declare ARGs for this stage
-ARG ACME_COMMIT
-ARG CC65_VERSION
-
-# Build ACME cross-assembler (pinned to specific commit for cache stability)
-RUN cd /tmp && \
-    wget -q https://github.com/meonwax/acme/archive/${ACME_COMMIT}.tar.gz && \
-    tar -xzf ${ACME_COMMIT}.tar.gz && \
-    cd acme-*/src && \
-    make && \
-    mkdir -p /opt/6502-tools/bin && \
-    cp acme /opt/6502-tools/bin/
-
-# Build cc65 suite
-RUN cd /tmp && \
-    wget -q https://github.com/cc65/cc65/archive/refs/tags/${CC65_VERSION}.tar.gz && \
-    tar -xzf ${CC65_VERSION}.tar.gz && \
-    cd cc65-* && \
-    make PREFIX=/opt/6502-tools && \
-    make install PREFIX=/opt/6502-tools
-
-# Runtime stage - much smaller
-FROM ghcr.io/code198x/code198x-base:latest AS runtime
+# Uses pre-built toolchain images for fast assembly
+FROM ghcr.io/code198x/code198x-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="Base image for 6502 family development"
@@ -49,15 +9,17 @@ LABEL version="1.0.0"
 USER root
 
 # Install only runtime dependencies
-# Use cache mount for apt to improve caching
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
     xxd \
-    bsdmainutils
+    bsdmainutils && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy built tools from builder stage
-COPY --from=builder /opt/6502-tools /opt/6502-tools
+# Copy pre-built tools from toolchain images
+# This is MUCH faster than building from source!
+COPY --from=ghcr.io/code198x/toolchains/cc65:v2.19 /opt/cc65 /opt/6502-tools/cc65
+COPY --from=ghcr.io/code198x/toolchains/acme:v0.97.0 /opt/acme /opt/6502-tools/acme
 
 # Set up directories and permissions
 RUN chown -R code198x:code198x /opt/6502-tools
@@ -65,7 +27,8 @@ RUN chown -R code198x:code198x /opt/6502-tools
 USER code198x
 
 # Set common environment variables for 6502 development
-ENV PATH="/opt/6502-tools/bin:$PATH"
+# Include both cc65 and acme in PATH
+ENV PATH="/opt/6502-tools/cc65/bin:/opt/6502-tools/acme/bin:$PATH"
 ENV RETRO_ARCH="6502"
 
 # Health check to verify assemblers work

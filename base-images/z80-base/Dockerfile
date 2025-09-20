@@ -1,43 +1,24 @@
-# Version pinning for reproducible builds (must be before FROM)
-ARG SJASMPLUS_VERSION=v1.21.0
-ARG PASMO_VERSION=0.5.5
-
 # Base image for Z80-family processors
-# Multi-stage build for smaller runtime image
-FROM ghcr.io/code198x/code198x-base:latest AS builder
+# Uses pre-built toolchain images for fast assembly
+FROM ghcr.io/code198x/code198x-base:latest
 
 USER root
 
-# Install build dependencies
-# Use cache mount for apt to improve caching
+# Install runtime dependencies
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    zlib1g-dev \
-    libpng-dev \
-    cmake \
-    wget \
-    autotools-dev
+    libstdc++6 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Re-declare ARGs for this stage
-ARG SJASMPLUS_VERSION
-ARG PASMO_VERSION
+# Copy pre-built tools from toolchain images
+COPY --from=ghcr.io/code198x/toolchains/sjasmplus:v1.20.3 /opt/sjasmplus /opt/z80-tools/sjasmplus
+COPY --from=ghcr.io/code198x/toolchains/vasm:v1.9.1 /opt/vasm/bin/vasmz80_oldstyle /opt/z80-tools/bin/vasmz80
 
-# Build sjasmplus (needs git for submodules)
+# Note: pasmo could be added as another toolchain if needed
+# For now, keeping inline build for this smaller tool
 RUN cd /tmp && \
-    git clone --recursive https://github.com/z00m128/sjasmplus.git && \
-    cd sjasmplus && \
-    git checkout ${SJASMPLUS_VERSION} && \
-    git submodule update --init --recursive && \
-    make && \
-    mkdir -p /opt/z80-tools/bin && \
-    cp sjasmplus /opt/z80-tools/bin/
-
-# Build pasmo
-RUN cd /tmp && \
-    wget -q http://pasmo.speccy.org/bin/pasmo-${PASMO_VERSION}.tar.gz && \
+    wget -q http://pasmo.speccy.org/bin/pasmo-0.5.5.tar.gz && \
     tar -xzf pasmo-${PASMO_VERSION}.tar.gz && \
     cd pasmo-${PASMO_VERSION} && \
     cp /usr/share/misc/config.guess . && \
