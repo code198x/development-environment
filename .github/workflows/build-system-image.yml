@@ -89,14 +89,14 @@ jobs:
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
-            type=sha,prefix={{branch}}-
+            type=sha,prefix={{branch}}-,enable=${{ inputs.version-tag == '' }}
             type=raw,value=${{ inputs.version-tag }},enable=${{ inputs.version-tag != '' }}
 
       - name: Build and push ${{ inputs.display-name }}
         uses: docker/build-push-action@v5
         with:
-          context: ./systems/${{ inputs.system-name }}
-          file: ./systems/${{ inputs.system-name }}/Dockerfile
+          context: ${{ endsWith(inputs.system-name, '-base') && format('./base-images/{0}', inputs.system-name) || format('./systems/{0}', inputs.system-name) }}
+          file: ${{ endsWith(inputs.system-name, '-base') && format('./base-images/{0}/Dockerfile', inputs.system-name) || format('./systems/{0}/Dockerfile', inputs.system-name) }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
