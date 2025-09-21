@@ -13,7 +13,7 @@ USER root
 
 # Copy NES configuration file
 RUN mkdir -p /opt/6502-tools/share/cc65/cfg/
-COPY nes.cfg /opt/6502-tools/share/cc65/cfg/
+COPY systems/nintendo-entertainment-system/nes.cfg /opt/6502-tools/share/cc65/cfg/
 
 # Copy NES-specific resources (headers, libs, examples)
 COPY --chown=code198x:code198x resources/nintendo-nes /opt/nes-resources
