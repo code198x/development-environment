@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # Commodore 64 Development
+  c64:
+    image: ghcr.io/code198x/commodore-64:latest
+    container_name: c64-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/c64:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Nintendo Entertainment System Development
+  nes:
+    image: ghcr.io/code198x/nintendo-entertainment-system:latest
+    container_name: nes-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nes:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # ZX Spectrum Development
+  spectrum:
+    image: ghcr.io/code198x/sinclair-zx-spectrum:latest
+    container_name: spectrum-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/spectrum:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Sega Genesis Development
+  genesis:
+    image: ghcr.io/code198x/sega-genesis:latest
+    container_name: genesis-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/genesis:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Amiga Development
+  amiga:
+    image: ghcr.io/code198x/commodore-amiga:latest
+    container_name: amiga-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/amiga:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Shared development tools container
+  tools:
+    image: ghcr.io/code198x/code198x-base:latest
+    container_name: retro-tools
+    volumes:
+      - ./workspace:/workspace
+      - ./projects:/projects
+      - ./resources:/resources:ro
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    environment:
+      - RETRO_DEV=1
+      - TERM=xterm-256color
+
+volumes:
+  workspace:
+  projects:

@@ -69,9 +69,73 @@ add-system:
 	@echo "4. Update systems-config.json"
 	@echo "5. Run: make build-<system-id>"
 
+# Interactive development shell for any system
+shell-%:
+	@echo "🖥️  Starting $* development environment..."
+	@docker run -it --rm \
+		-v $(PWD)/workspace:/workspace \
+		-v $(PWD)/projects/$*:/projects \
+		-v $(PWD)/resources/$*:/resources:ro \
+		-w /workspace \
+		$(DOCKER_ORG)/$*:latest /bin/bash
+
+# Quick access shells
+c64: shell-commodore-64
+nes: shell-nintendo-entertainment-system
+spectrum: shell-sinclair-zx-spectrum
+amiga: shell-commodore-amiga
+genesis: shell-sega-genesis
+
+# Create a new project for a system
+new-project:
+ifndef NAME
+	$(error NAME is not set. Use: make new-project NAME=myproject SYSTEM=c64)
+endif
+ifndef SYSTEM
+	$(error SYSTEM is not set. Use: make new-project NAME=myproject SYSTEM=c64)
+endif
+	@echo "📁 Creating new $(SYSTEM) project: $(NAME)"
+	@mkdir -p projects/$(SYSTEM)/$(NAME)
+	@echo "; $(NAME) - $(SYSTEM) Assembly Project" > projects/$(SYSTEM)/$(NAME)/main.asm
+	@echo "; Created: $$(date)" >> projects/$(SYSTEM)/$(NAME)/main.asm
+	@echo "" >> projects/$(SYSTEM)/$(NAME)/main.asm
+	@echo "Project created at projects/$(SYSTEM)/$(NAME)"
+
+# Development environment setup
+dev-setup:
+	@echo "🔧 Setting up development environment..."
+	@mkdir -p workspace projects/{commodore-64,nintendo-entertainment-system,sinclair-zx-spectrum,commodore-amiga,sega-genesis}
+	@echo "Development directories created"
+
+# Run assembler in container
+assemble:
+ifndef FILE
+	$(error FILE is not set. Use: make assemble FILE=main.asm SYSTEM=c64)
+endif
+ifndef SYSTEM
+	$(error SYSTEM is not set. Use: make assemble FILE=main.asm SYSTEM=c64)
+endif
+	@echo "⚙️  Assembling $(FILE) for $(SYSTEM)..."
+	@docker run --rm \
+		-v $(PWD)/projects/$(SYSTEM):/workspace \
+		$(DOCKER_ORG)/$(SYSTEM):latest $(FILE)
+
 # Help
 help:
 	@echo "Code198x Development Environment - Make targets"
+	@echo ""
+	@echo "Quick Start:"
+	@echo "  make dev-setup      - Set up development directories"
+	@echo "  make c64            - Start Commodore 64 shell"
+	@echo "  make nes            - Start NES shell"
+	@echo "  make spectrum       - Start ZX Spectrum shell"
+	@echo "  make amiga          - Start Amiga shell"
+	@echo "  make genesis        - Start Sega Genesis shell"
+	@echo ""
+	@echo "Development:"
+	@echo "  make shell-<system> - Start development shell for system"
+	@echo "  make new-project NAME=<name> SYSTEM=<system> - Create new project"
+	@echo "  make assemble FILE=<file> SYSTEM=<system>    - Assemble file"
 	@echo ""
 	@echo "Building:"
 	@echo "  make build          - Build all Docker images"
