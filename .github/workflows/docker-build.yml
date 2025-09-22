@@ -96,6 +96,9 @@ jobs:
           - toolchain: fasmarm
             version: latest
             build-time: low
+          - toolchain: binutils-sh
+            version: v2.42
+            build-time: high
 
     steps:
       - name: Checkout code
