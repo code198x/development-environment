@@ -1,34 +1,6 @@
 # TMS9900 Processor Base Image
 # For TI-99/4A (16-bit processor)
-FROM ghcr.io/code198x/code198x-base:latest AS builder
-
-USER root
-
-# Install Python for xdt99 tools
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
-    git \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install xdt99 tools (includes xas99 assembler for TMS9900)
-# Using --break-system-packages is safe in Docker containers
-RUN python3 -m pip install --break-system-packages --upgrade pip && \
-    python3 -m pip install --break-system-packages xdt99
-
-# Create tools directory structure
-RUN mkdir -p /opt/tms9900-tools/bin && \
-    # Create wrapper scripts for xdt99 tools
-    echo '#!/bin/bash\npython3 -m xdt99.xas99 "$@"' > /opt/tms9900-tools/bin/xas99 && \
-    echo '#!/bin/bash\npython3 -m xdt99.xga99 "$@"' > /opt/tms9900-tools/bin/xga99 && \
-    echo '#!/bin/bash\npython3 -m xdt99.xbas99 "$@"' > /opt/tms9900-tools/bin/xbas99 && \
-    echo '#!/bin/bash\npython3 -m xdt99.xdm99 "$@"' > /opt/tms9900-tools/bin/xdm99 && \
-    chmod +x /opt/tms9900-tools/bin/*
-
-# Runtime stage
-FROM ghcr.io/code198x/code198x-base:latest AS runtime
+FROM ghcr.io/code198x/code198x-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="Base image for TMS9900 processor development (TI-99/4A)"
@@ -36,7 +8,7 @@ LABEL version="1.0.0"
 
 USER root
 
-# Install Python runtime
+# Install Python runtime (needed for xdt99)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
@@ -44,11 +16,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install xdt99 in runtime
+# Install xdt99 (required in runtime for Python-based tools)
 RUN python3 -m pip install --break-system-packages xdt99
 
-# Copy wrapper scripts from builder
-COPY --from=builder /opt/tms9900-tools /opt/tms9900-tools
+# Copy wrapper scripts from toolchain image
+COPY --from=ghcr.io/code198x/toolchains/xdt99:latest /opt/xdt99 /opt/tms9900-tools
 
 # Set up permissions
 RUN chown -R code198x:code198x /opt/tms9900-tools

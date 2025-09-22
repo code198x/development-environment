@@ -103,6 +103,12 @@ jobs:
           - toolchain: wla-dx
             version: latest
             build-time: high
+          - toolchain: jzintv
+            version: latest
+            build-time: medium
+          - toolchain: xdt99
+            version: latest
+            build-time: low
           - toolchain: asl
             version: latest
             build-time: high
