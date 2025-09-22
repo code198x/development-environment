@@ -13,19 +13,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     unzip \
     ca-certificates \
+    bison \
     libsdl2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build jzintv
 WORKDIR /build
 
-# Download jzintv Linux binary package which contains as1600 assembler
+# Download and extract jzintv binary package (works for multi-arch with QEMU)
 RUN wget -q http://spatula-city.org/~im14u2c/intv/dl/jzintv-20200712-linux-x86-64-sdl2.zip && \
-    unzip -q jzintv-20200712-linux-x86-64-sdl2.zip
-
-# The jzintv package includes prebuilt Linux binaries
-RUN mkdir -p /opt/jzintv/bin && \
-    # Copy the assembler and utilities from the jzintv package
+    unzip -q jzintv-20200712-linux-x86-64-sdl2.zip && \
+    # Create installation directory
+    mkdir -p /opt/jzintv/bin && \
+    # Copy only the tools we need
     cp jzintv-20200712-linux-x86-64-sdl2/bin/as1600 /opt/jzintv/bin/ && \
     cp jzintv-20200712-linux-x86-64-sdl2/bin/bin2rom /opt/jzintv/bin/ && \
     cp jzintv-20200712-linux-x86-64-sdl2/bin/rom2bin /opt/jzintv/bin/ && \
