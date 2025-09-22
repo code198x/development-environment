@@ -16,12 +16,12 @@ LABEL significance="Popular 16-bit home computer with unique architecture"
 USER root
 
 # Install xdt99 tools for TMS9900 development
+# Using --break-system-packages is safe in Docker containers
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
-    python3-venv \
-    && python3 -m pip install --upgrade pip \
-    && python3 -m pip install xdt99 \
+    && python3 -m pip install --break-system-packages --upgrade pip \
+    && python3 -m pip install --break-system-packages xdt99 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
