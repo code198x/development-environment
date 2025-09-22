@@ -1,59 +1,19 @@
-# ACME Toolchain Image
-# Builds the ACME cross-assembler for 6502 development
-# Separated for caching and parallel builds
-
-ARG ACME_VERSION=0.97.0
-
-# Build stage
+# ACME Toolchain - Multi-platform 6502/6510/65816 Cross Assembler
 FROM ubuntu:24.04 AS builder
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    ca-certificates \
+# Install ACME from Ubuntu package repository
+# Version 0.97 includes MEGA65 (45GS02) support
+RUN apt-get update && apt-get install -y \
+    acme \
     && rm -rf /var/lib/apt/lists/*
 
-# Build ACME
-ARG ACME_VERSION
-WORKDIR /build
-
-# Clone and build from GitHub
-RUN git clone --depth=1 https://github.com/meonwax/acme.git && \
-    cd acme/src && \
-    make && \
-    mkdir -p /opt/acme/bin && \
-    cp acme /opt/acme/bin/ && \
-    # Include library files
+# Copy to /opt/acme for consistency with other toolchains
+RUN mkdir -p /opt/acme/bin && \
+    cp /usr/bin/acme /opt/acme/bin/ && \
+    # Copy library files if they exist
     mkdir -p /opt/acme/lib && \
-    cp -r ../ACME_Lib/* /opt/acme/lib/ 2>/dev/null || true && \
-    # Create version file
-    echo "latest" > /opt/acme/VERSION
+    cp -r /usr/share/acme/* /opt/acme/lib/ 2>/dev/null || true
 
-# Test the build
-RUN /opt/acme/bin/acme --version
-
-# Final stage - minimal image
-FROM ubuntu:24.04 AS runtime
-
-# No special runtime dependencies for ACME
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libc6 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy the built tool
+# Final stage - minimal runtime
+FROM scratch AS runtime
 COPY --from=builder /opt/acme /opt/acme
-
-# Add labels
-LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
-LABEL org.opencontainers.image.description="ACME assembler for 6502 development"
-LABEL org.opencontainers.image.version="0.97.0"
-
-# Set PATH
-ENV PATH="/opt/acme/bin:$PATH"
-
-# Health check
-RUN acme --version
-
-# Default command
-CMD ["acme", "--version"]
