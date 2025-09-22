@@ -1,17 +1,18 @@
 # Mattel Intellivision Development Environment
 # Based on CP1610 processor (unique 16-bit processor)
-FROM ghcr.io/code198x/code198x-base:latest
+FROM ghcr.io/code198x/cp1610-base:latest
 
 LABEL maintainer="code198x"
 LABEL description="Mattel Intellivision assembly development environment"
 LABEL version="1.0.0"
-
-# Note: CP1610 is a unique processor - will need custom assembler
-# For now, using base image until CP1610 assembler is added
+LABEL system="mattel-intellivision"
+LABEL year="1979"
+LABEL cpu="CP1610"
+LABEL manufacturer="Mattel"
+LABEL significance="Popular 16-bit gaming console with unique architecture"
 
 # Copy Intellivision-specific resources
 COPY --chown=code198x:code198x resources/ /resources/
-
 
 # Set Intellivision-specific environment
 ENV SYSTEM_NAME="Mattel Intellivision"
@@ -21,9 +22,5 @@ ENV INTELLIVISION_LIBS="/resources/libs"
 
 WORKDIR /workspace
 
-# Health check - basic for now
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD echo "CP1610 assembler needed" || exit 0
-
-# Default command shows usage
-CMD ["sh", "-c", "echo 'Mattel Intellivision Development Environment\\nProcessor: CP1610 (16-bit)\\nNote: CP1610 assembler integration needed'"]
+# Health check inherits from base image
+# Default command inherits from base image

@@ -564,6 +564,74 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  build-cp1610-base:
+    name: "CP1610 Processor Base (as1600)"
+    runs-on: ubuntu-latest
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push cp1610-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/cp1610-base
+          file: ./base-images/cp1610-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/cp1610-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-tms9900-base:
+    name: "TMS9900 Processor Base (xas99)"
+    runs-on: ubuntu-latest
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push tms9900-base
+        uses: docker/build-push-action@v5
+        with:
+          context: ./base-images/tms9900-base
+          file: ./base-images/tms9900-base/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.GHCR_ORG }}/tms9900-base:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   # ============================================
   # Stage 3: Build system images (parallel, separate jobs)
   # Using reusable workflow for DRY principle
@@ -1478,8 +1546,8 @@ jobs:
   # ============================================
   build-mattel-intellivision:
     name: "Mattel Intellivision"
-    needs: build-root-base
-    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    needs: build-cp1610-base
+    if: always() && (needs.build-cp1610-base.result == 'success' || needs.build-cp1610-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: mattel-intellivision
@@ -1495,8 +1563,8 @@ jobs:
   # ============================================
   build-ti-99-4a:
     name: "TI-99/4A"
-    needs: build-root-base
-    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    needs: build-tms9900-base
+    if: always() && (needs.build-tms9900-base.result == 'success' || needs.build-tms9900-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: ti-99-4a
