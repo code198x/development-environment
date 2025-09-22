@@ -871,32 +871,6 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
-  build-atari-asteroids:
-    name: "Atari Asteroids"
-    needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: atari-asteroids
-      display-name: Atari Asteroids
-      test-command: --help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  build-atari-tempest:
-    name: "Atari Tempest"
-    needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: atari-tempest
-      display-name: Atari Tempest
-      test-command: --help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
   # ============================================
   # Additional Z80 Family Systems
   # ============================================
@@ -1004,45 +978,6 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
-  build-namco-pacman:
-    name: "Namco Pac-Man"
-    needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: namco-pacman
-      display-name: Namco Pac-Man
-      test-command: --help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  build-nintendo-donkey-kong:
-    name: "Nintendo Donkey Kong"
-    needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: nintendo-donkey-kong
-      display-name: Nintendo Donkey Kong
-      test-command: --help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  build-namco-galaga:
-    name: "Namco Galaga"
-    needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: namco-galaga
-      display-name: Namco Galaga
-      test-command: --help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
   # ============================================
   # 68000 Family Systems (Additional)
   # ============================================
@@ -1093,32 +1028,6 @@ jobs:
     with:
       system-name: atari-jaguar
       display-name: Atari Jaguar
-      test-command: -help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  build-capcom-street-fighter-ii:
-    name: "Capcom Street Fighter II"
-    needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: capcom-street-fighter-ii
-      display-name: Capcom Street Fighter II
-      test-command: -help
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  build-konami-gx400:
-    name: "Konami GX400"
-    needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: konami-gx400
-      display-name: Konami GX400
       test-command: -help
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -1187,19 +1096,6 @@ jobs:
     with:
       system-name: general-computer-vectrex
       display-name: Vectrex
-      test-command: --version
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  build-williams-defender:
-    name: "Williams Defender"
-    needs: build-6809-base
-    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
-    uses: ./.github/workflows/build-system-image.yml
-    with:
-      system-name: williams-defender
-      display-name: Williams Defender
       test-command: --version
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -1434,19 +1330,17 @@ jobs:
       build-atari-2600, build-atari-800, build-acorn-bbc-micro, build-acorn-electron,
       build-commodore-pet, build-commodore-128, build-commodore-plus4, build-oric-atmos,
       build-oric-1, build-nec-turbografx16, build-nec-pc-engine-supergx, build-atari-lynx,
-      build-atari-asteroids, build-atari-tempest,
       # Z80 Family (16 systems)
       build-zx-spectrum, build-amstrad-cpc, build-msx, build-sega-master-system,
       build-nintendo-game-boy, build-tandy-trs80-model1, build-sinclair-zx81, build-coleco-adam,
       build-sega-game-gear, build-sharp-x1, build-nec-pc8801, build-sam-coupe,
-      build-enterprise-128, build-namco-pacman, build-nintendo-donkey-kong, build-namco-galaga,
+      build-enterprise-128,
       # 68000 Family (9 systems)
       build-commodore-amiga, build-atari-st, build-sharp-x68000, build-sega-genesis,
       build-snk-neogeo-mvs, build-snk-neogeo-aes, build-atari-jaguar,
-      build-capcom-street-fighter-ii, build-konami-gx400,
       # 6809 Family (6 systems)
       build-tandy-coco, build-dragon-32, build-dragon-64, build-thomson-mo5,
-      build-general-computer-vectrex, build-williams-defender,
+      build-general-computer-vectrex,
       # 8080 Family (3 systems)
       build-altair-8800, build-imsai-8080, build-compupro-system816,
       # MIPS Family (2 systems)
