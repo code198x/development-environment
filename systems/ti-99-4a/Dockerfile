@@ -19,7 +19,9 @@ USER root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
-    && pip3 install xdt99 \
+    python3-venv \
+    && python3 -m pip install --upgrade pip \
+    && python3 -m pip install xdt99 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

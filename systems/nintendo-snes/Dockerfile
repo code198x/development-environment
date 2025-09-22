@@ -12,8 +12,6 @@ LABEL version="1.0.0"
 # Copy SNES-specific resources
 COPY --chown=code198x:code198x resources/ /resources/
 
-# Copy test program if exists
-COPY --chown=code198x:code198x test.asm /workspace/test.asm 2>/dev/null || true
 
 # Set SNES-specific environment
 ENV SYSTEM_NAME="Nintendo SNES"
