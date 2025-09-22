@@ -1,28 +1,20 @@
 # Binutils-SH Toolchain - SuperH Cross-Compiler Tools
 FROM ubuntu:24.04 AS builder
 
+# Install pre-built SH4 cross-compiler toolchain from Ubuntu repositories
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    wget \
-    texinfo \
+    binutils-sh4-linux-gnu \
+    gcc-sh4-linux-gnu \
     && rm -rf /var/lib/apt/lists/*
 
-# Build binutils for SuperH targets (SH-2, SH-4)
-ARG BINUTILS_VERSION=2.42
-RUN cd /tmp && \
-    wget -q https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VERSION}.tar.gz && \
-    tar -xzf binutils-${BINUTILS_VERSION}.tar.gz && \
-    cd binutils-${BINUTILS_VERSION} && \
-    mkdir build && cd build && \
-    ../configure \
-        --prefix=/opt/binutils-sh \
-        --target=sh-elf \
-        --disable-nls \
-        --disable-werror \
-        --with-sysroot && \
-    make -j$(nproc) && \
-    make install && \
-    cd / && rm -rf /tmp/binutils-*
+# Copy binaries to /opt/binutils-sh for consistency with other toolchains
+RUN mkdir -p /opt/binutils-sh/bin && \
+    cp /usr/bin/sh4-linux-gnu-* /opt/binutils-sh/bin/ && \
+    # Create sh-elf symlinks for compatibility with existing scripts
+    cd /opt/binutils-sh/bin && \
+    for tool in sh4-linux-gnu-*; do \
+        ln -s "$tool" "sh-elf-${tool#sh4-linux-gnu-}" || true; \
+    done
 
 # Final stage - minimal runtime
 FROM scratch AS runtime
