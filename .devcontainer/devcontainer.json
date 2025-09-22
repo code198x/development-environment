@@ -1,5 +1,5 @@
 {
-    "name": "Code198x Retro Development",
+    "name": "Code Like It's 198x Retro Development",
     "dockerComposeFile": "../docker-compose.yml",
     "service": "tools",
     "workspaceFolder": "/workspace",
@@ -52,7 +52,7 @@
         "source=${localWorkspaceFolder}/resources,target=/resources,type=bind,readonly"
     ],
 
-    "postCreateCommand": "echo 'Welcome to Code198x Retro Development!' && echo 'Run: retro help' for commands",
+    "postCreateCommand": "echo 'Welcome to Code Like It's 198x!' && echo 'Run: code198x help' for commands",
 
     "remoteUser": "code198x"
 }

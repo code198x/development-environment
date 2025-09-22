@@ -1,4 +1,4 @@
-# Code198x Developer Guide
+# Code Like It's 198x Developer Guide
 
 ## 🚀 Quick Start
 

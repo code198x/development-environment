@@ -77,6 +77,27 @@ jobs:
           - toolchain: nasm
             version: v2.16.03
             build-time: low
+          - toolchain: lwasm
+            version: v4.20
+            build-time: medium
+          - toolchain: yasm
+            version: latest
+            build-time: medium
+          - toolchain: wla-dx
+            version: latest
+            build-time: high
+          - toolchain: asl
+            version: latest
+            build-time: high
+          - toolchain: asm8080
+            version: latest
+            build-time: low
+          - toolchain: fasmarm
+            version: latest
+            build-time: low
+          - toolchain: binutils-sh
+            version: latest
+            build-time: high
 
     steps:
       - name: Checkout code

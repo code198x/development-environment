@@ -19,9 +19,9 @@ USER root
 COPY --chown=code198x:code198x resources/panasonic-3do /opt/3do-resources
 
 # Set up environment for 3DO development
-ENV 3DO_INCLUDES=/opt/3do-resources/includes
-ENV 3DO_LIBS=/opt/3do-resources/libs
-ENV 3DO_EXAMPLES=/opt/3do-resources/examples
+ENV THREEDO_INCLUDES=/opt/3do-resources/includes
+ENV THREEDO_LIBS=/opt/3do-resources/libs
+ENV THREEDO_EXAMPLES=/opt/3do-resources/examples
 ENV SYSTEM_INCLUDES=/opt/3do-resources/includes
 ENV SYSTEM_LIBS=/opt/3do-resources/libs
 ENV SYSTEM_EXAMPLES=/opt/3do-resources/examples

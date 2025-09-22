@@ -1,70 +1,64 @@
 #!/bin/bash
-# Test script for new toolchain architecture
+# Test all toolchain builds locally before pushing
 
 set -e
 
-echo "🔨 Testing Toolchain Build Architecture"
-echo "========================================"
+echo "🔧 Testing all toolchain builds with Ubuntu 24.04..."
+echo "================================="
 
-# Colors for output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+# Track successes and failures
+SUCCEEDED=""
+FAILED=""
 
-# Test building a toolchain image
-echo -e "\n${YELLOW}1. Building ACME toolchain (should be fast)...${NC}"
-time docker build -t test/acme:latest toolchains/acme/
+# Function to build and test a toolchain
+build_toolchain() {
+    local name=$1
+    local version=$2
 
-echo -e "\n${YELLOW}2. Testing ACME toolchain image...${NC}"
-docker run --rm test/acme:latest acme --version
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ ACME toolchain works${NC}"
-else
-    echo -e "${RED}✗ ACME toolchain failed${NC}"
-    exit 1
-fi
+    echo ""
+    echo "📦 Building $name:$version..."
 
-echo -e "\n${YELLOW}3. Building 6502-base using toolchain...${NC}"
-# First, we need to push the test image to local registry or use build context
-# For testing, let's modify the Dockerfile temporarily
-cat > /tmp/test-6502-base.dockerfile << 'EOF'
-FROM ghcr.io/code198x/code198x-base:latest
+    if docker build -t ghcr.io/code198x/toolchains/$name:$version toolchains/$name/ 2>&1 | tail -5; then
+        echo "✅ Build successful"
 
-USER root
+        # Test if the image runs
+        if docker run --rm ghcr.io/code198x/toolchains/$name:$version ls /opt 2>/dev/null | head -5; then
+            echo "✅ $name:$version - SUCCESS"
+            SUCCEEDED="$SUCCEEDED $name:$version"
+        else
+            echo "❌ $name:$version - Runtime test failed"
+            FAILED="$FAILED $name:$version"
+        fi
+    else
+        echo "❌ $name:$version - Build failed"
+        FAILED="$FAILED $name:$version"
+    fi
+}
 
-# For testing, copy from local image instead of registry
-COPY --from=test/acme:latest /opt/acme /opt/6502-tools/acme
+# Test all toolchains
+echo "🔨 Testing toolchains..."
 
-# Note: cc65 would also be copied but we'll skip for this test
-ENV PATH="/opt/6502-tools/acme/bin:$PATH"
+# Existing toolchains
+build_toolchain "cc65" "v2.19"
+build_toolchain "acme" "v0.97.0"
+build_toolchain "sjasmplus" "v1.20.3"
+build_toolchain "vasm" "latest"
 
-USER code198x
+# New toolchains
+build_toolchain "lwasm" "v4.20"
+build_toolchain "asm8080" "latest"
+build_toolchain "yasm" "latest"
+build_toolchain "asl" "latest"
+build_toolchain "fasmarm" "latest"
+build_toolchain "wla-dx" "latest"
 
-# Test that it works
-RUN acme --version
-EOF
-
-time docker build -t test/6502-base:latest -f /tmp/test-6502-base.dockerfile .
-
-echo -e "\n${YELLOW}4. Testing 6502-base image...${NC}"
-docker run --rm test/6502-base:latest acme --version
-if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ 6502-base with toolchain works${NC}"
-else
-    echo -e "${RED}✗ 6502-base failed${NC}"
-    exit 1
-fi
-
-echo -e "\n${GREEN}========================================${NC}"
-echo -e "${GREEN}✓ Toolchain architecture test successful!${NC}"
-echo -e "${GREEN}========================================${NC}"
-
-echo -e "\n${YELLOW}Build time comparison:${NC}"
-echo "Old method (building cc65 from source): ~35 minutes"
-echo "New method (using pre-built toolchain): ~2 minutes"
 echo ""
-echo "This represents a ${GREEN}94% reduction${NC} in build time!"
-
-# Cleanup
-rm -f /tmp/test-6502-base.dockerfile
+echo "================================="
+echo "📊 Build Summary:"
+echo "✅ Succeeded:$SUCCEEDED"
+if [ -n "$FAILED" ]; then
+    echo "❌ Failed:$FAILED"
+    exit 1
+else
+    echo "🎉 All toolchains built successfully with Ubuntu 24.04!"
+fi

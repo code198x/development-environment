@@ -1,67 +1,710 @@
 version: '3.8'
 
 services:
-  # Commodore 64 Development
-  c64:
+  acorn-bbc-micro:
+    image: ghcr.io/code198x/acorn-bbc-micro:latest
+    container_name: acorn-bbc-micro-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/acorn-bbc-micro:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  acorn-electron:
+    image: ghcr.io/code198x/acorn-electron:latest
+    container_name: acorn-electron-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/acorn-electron:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  altair-8800:
+    image: ghcr.io/code198x/altair-8800:latest
+    container_name: altair-8800-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/altair-8800:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  amstrad-cpc:
+    image: ghcr.io/code198x/amstrad-cpc:latest
+    container_name: amstrad-cpc-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/amstrad-cpc:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  amstrad-pcw:
+    image: ghcr.io/code198x/amstrad-pcw:latest
+    container_name: amstrad-pcw-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/amstrad-pcw:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  apple-ii:
+    image: ghcr.io/code198x/apple-ii:latest
+    container_name: apple-ii-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/apple-ii:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-2600:
+    image: ghcr.io/code198x/atari-2600:latest
+    container_name: atari-2600-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-2600:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-5200:
+    image: ghcr.io/code198x/atari-5200:latest
+    container_name: atari-5200-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-5200:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-7800:
+    image: ghcr.io/code198x/atari-7800:latest
+    container_name: atari-7800-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-7800:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-800:
+    image: ghcr.io/code198x/atari-800:latest
+    container_name: atari-800-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-800:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-jaguar:
+    image: ghcr.io/code198x/atari-jaguar:latest
+    container_name: atari-jaguar-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-jaguar:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-lynx:
+    image: ghcr.io/code198x/atari-lynx:latest
+    container_name: atari-lynx-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-lynx:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  atari-st:
+    image: ghcr.io/code198x/atari-st:latest
+    container_name: atari-st-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/atari-st:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  bandai-wonderswan:
+    image: ghcr.io/code198x/bandai-wonderswan:latest
+    container_name: bandai-wonderswan-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/bandai-wonderswan:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  coleco-adam:
+    image: ghcr.io/code198x/coleco-adam:latest
+    container_name: coleco-adam-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/coleco-adam:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  commodore-128:
+    image: ghcr.io/code198x/commodore-128:latest
+    container_name: commodore-128-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/commodore-128:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  commodore-64:
     image: ghcr.io/code198x/commodore-64:latest
-    container_name: c64-dev
+    container_name: commodore-64-dev
     volumes:
       - ./workspace:/workspace
-      - ./projects/c64:/projects
+      - ./projects/commodore-64:/projects
     working_dir: /workspace
     stdin_open: true
     tty: true
     command: /bin/bash
 
-  # Nintendo Entertainment System Development
-  nes:
-    image: ghcr.io/code198x/nintendo-entertainment-system:latest
-    container_name: nes-dev
-    volumes:
-      - ./workspace:/workspace
-      - ./projects/nes:/projects
-    working_dir: /workspace
-    stdin_open: true
-    tty: true
-    command: /bin/bash
-
-  # ZX Spectrum Development
-  spectrum:
-    image: ghcr.io/code198x/sinclair-zx-spectrum:latest
-    container_name: spectrum-dev
-    volumes:
-      - ./workspace:/workspace
-      - ./projects/spectrum:/projects
-    working_dir: /workspace
-    stdin_open: true
-    tty: true
-    command: /bin/bash
-
-  # Sega Genesis Development
-  genesis:
-    image: ghcr.io/code198x/sega-genesis:latest
-    container_name: genesis-dev
-    volumes:
-      - ./workspace:/workspace
-      - ./projects/genesis:/projects
-    working_dir: /workspace
-    stdin_open: true
-    tty: true
-    command: /bin/bash
-
-  # Amiga Development
-  amiga:
+  commodore-amiga:
     image: ghcr.io/code198x/commodore-amiga:latest
-    container_name: amiga-dev
+    container_name: commodore-amiga-dev
     volumes:
       - ./workspace:/workspace
-      - ./projects/amiga:/projects
+      - ./projects/commodore-amiga:/projects
     working_dir: /workspace
     stdin_open: true
     tty: true
     command: /bin/bash
 
-  # Shared development tools container
+  commodore-pet:
+    image: ghcr.io/code198x/commodore-pet:latest
+    container_name: commodore-pet-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/commodore-pet:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  commodore-plus4:
+    image: ghcr.io/code198x/commodore-plus4:latest
+    container_name: commodore-plus4-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/commodore-plus4:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  commodore-vic-20:
+    image: ghcr.io/code198x/commodore-vic-20:latest
+    container_name: commodore-vic-20-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/commodore-vic-20:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  compupro-system816:
+    image: ghcr.io/code198x/compupro-system816:latest
+    container_name: compupro-system816-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/compupro-system816:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  dragon-32:
+    image: ghcr.io/code198x/dragon-32:latest
+    container_name: dragon-32-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/dragon-32:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  dragon-64:
+    image: ghcr.io/code198x/dragon-64:latest
+    container_name: dragon-64-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/dragon-64:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  enterprise-128:
+    image: ghcr.io/code198x/enterprise-128:latest
+    container_name: enterprise-128-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/enterprise-128:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  fujitsu-fm-towns:
+    image: ghcr.io/code198x/fujitsu-fm-towns:latest
+    container_name: fujitsu-fm-towns-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/fujitsu-fm-towns:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  general-computer-vectrex:
+    image: ghcr.io/code198x/general-computer-vectrex:latest
+    container_name: general-computer-vectrex-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/general-computer-vectrex:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  imsai-8080:
+    image: ghcr.io/code198x/imsai-8080:latest
+    container_name: imsai-8080-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/imsai-8080:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  mattel-intellivision:
+    image: ghcr.io/code198x/mattel-intellivision:latest
+    container_name: mattel-intellivision-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/mattel-intellivision:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  msx:
+    image: ghcr.io/code198x/msx:latest
+    container_name: msx-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/msx:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nec-pc-engine-supergx:
+    image: ghcr.io/code198x/nec-pc-engine-supergx:latest
+    container_name: nec-pc-engine-supergx-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nec-pc-engine-supergx:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nec-pc8801:
+    image: ghcr.io/code198x/nec-pc8801:latest
+    container_name: nec-pc8801-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nec-pc8801:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nec-pc9801:
+    image: ghcr.io/code198x/nec-pc9801:latest
+    container_name: nec-pc9801-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nec-pc9801:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nec-turbografx16:
+    image: ghcr.io/code198x/nec-turbografx16:latest
+    container_name: nec-turbografx16-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nec-turbografx16:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nintendo-64:
+    image: ghcr.io/code198x/nintendo-64:latest
+    container_name: nintendo-64-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nintendo-64:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nintendo-ds:
+    image: ghcr.io/code198x/nintendo-ds:latest
+    container_name: nintendo-ds-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nintendo-ds:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nintendo-entertainment-system:
+    image: ghcr.io/code198x/nintendo-entertainment-system:latest
+    container_name: nintendo-entertainment-system-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nintendo-entertainment-system:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nintendo-game-boy:
+    image: ghcr.io/code198x/nintendo-game-boy:latest
+    container_name: nintendo-game-boy-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nintendo-game-boy:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nintendo-gba:
+    image: ghcr.io/code198x/nintendo-gba:latest
+    container_name: nintendo-gba-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nintendo-gba:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  nintendo-snes:
+    image: ghcr.io/code198x/nintendo-snes:latest
+    container_name: nintendo-snes-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/nintendo-snes:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  oric-1:
+    image: ghcr.io/code198x/oric-1:latest
+    container_name: oric-1-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/oric-1:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  oric-atmos:
+    image: ghcr.io/code198x/oric-atmos:latest
+    container_name: oric-atmos-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/oric-atmos:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  panasonic-3do:
+    image: ghcr.io/code198x/panasonic-3do:latest
+    container_name: panasonic-3do-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/panasonic-3do:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  philips-cdi:
+    image: ghcr.io/code198x/philips-cdi:latest
+    container_name: philips-cdi-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/philips-cdi:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sam-coupe:
+    image: ghcr.io/code198x/sam-coupe:latest
+    container_name: sam-coupe-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sam-coupe:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sega-32x:
+    image: ghcr.io/code198x/sega-32x:latest
+    container_name: sega-32x-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sega-32x:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sega-dreamcast:
+    image: ghcr.io/code198x/sega-dreamcast:latest
+    container_name: sega-dreamcast-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sega-dreamcast:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sega-game-gear:
+    image: ghcr.io/code198x/sega-game-gear:latest
+    container_name: sega-game-gear-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sega-game-gear:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sega-genesis:
+    image: ghcr.io/code198x/sega-genesis:latest
+    container_name: sega-genesis-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sega-genesis:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sega-master-system:
+    image: ghcr.io/code198x/sega-master-system:latest
+    container_name: sega-master-system-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sega-master-system:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sega-saturn:
+    image: ghcr.io/code198x/sega-saturn:latest
+    container_name: sega-saturn-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sega-saturn:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sharp-x1:
+    image: ghcr.io/code198x/sharp-x1:latest
+    container_name: sharp-x1-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sharp-x1:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sharp-x68000:
+    image: ghcr.io/code198x/sharp-x68000:latest
+    container_name: sharp-x68000-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sharp-x68000:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sinclair-ql:
+    image: ghcr.io/code198x/sinclair-ql:latest
+    container_name: sinclair-ql-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sinclair-ql:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sinclair-zx-spectrum:
+    image: ghcr.io/code198x/sinclair-zx-spectrum:latest
+    container_name: sinclair-zx-spectrum-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sinclair-zx-spectrum:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sinclair-zx81:
+    image: ghcr.io/code198x/sinclair-zx81:latest
+    container_name: sinclair-zx81-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sinclair-zx81:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  snk-neogeo-aes:
+    image: ghcr.io/code198x/snk-neogeo-aes:latest
+    container_name: snk-neogeo-aes-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/snk-neogeo-aes:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  snk-neogeo-mvs:
+    image: ghcr.io/code198x/snk-neogeo-mvs:latest
+    container_name: snk-neogeo-mvs-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/snk-neogeo-mvs:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  snk-neogeo-pocket:
+    image: ghcr.io/code198x/snk-neogeo-pocket:latest
+    container_name: snk-neogeo-pocket-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/snk-neogeo-pocket:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  sony-playstation:
+    image: ghcr.io/code198x/sony-playstation:latest
+    container_name: sony-playstation-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/sony-playstation:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  tandy-coco:
+    image: ghcr.io/code198x/tandy-coco:latest
+    container_name: tandy-coco-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/tandy-coco:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  tandy-trs80-model1:
+    image: ghcr.io/code198x/tandy-trs80-model1:latest
+    container_name: tandy-trs80-model1-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/tandy-trs80-model1:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  thomson-mo5:
+    image: ghcr.io/code198x/thomson-mo5:latest
+    container_name: thomson-mo5-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/thomson-mo5:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  ti-99-4a:
+    image: ghcr.io/code198x/ti-99-4a:latest
+    container_name: ti-99-4a-dev
+    volumes:
+      - ./workspace:/workspace
+      - ./projects/ti-99-4a:/projects
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
   tools:
     image: ghcr.io/code198x/code198x-base:latest
     container_name: retro-tools
@@ -76,7 +719,3 @@ services:
     environment:
       - RETRO_DEV=1
       - TERM=xterm-256color
-
-volumes:
-  workspace:
-  projects:

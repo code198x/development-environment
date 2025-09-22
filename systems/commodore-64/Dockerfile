@@ -12,7 +12,8 @@ LABEL system="commodore-64"
 USER root
 
 # Copy C64-specific resources (headers, libs, examples)
-COPY --chown=code198x:code198x resources/commodore-64 /opt/c64-resources
+# Build context should be from repository root with: docker build -f systems/commodore-64/Dockerfile .
+COPY --chown=code198x:code198x resources/commodore-64/ /opt/c64-resources/
 
 # Set up environment for C64 development
 ENV C64_INCLUDES=/opt/c64-resources/includes

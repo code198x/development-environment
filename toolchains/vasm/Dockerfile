@@ -63,7 +63,7 @@ COPY --from=builder /opt/vasm /opt/vasm
 # Add labels
 LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
 LABEL org.opencontainers.image.description="vasm multi-target assembler"
-LABEL org.opencontainers.image.version="${VASM_VERSION}"
+LABEL org.opencontainers.image.version="latest"
 
 # Set PATH
 ENV PATH="/opt/vasm/bin:$PATH"

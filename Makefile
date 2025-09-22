@@ -79,20 +79,15 @@ shell-%:
 		-w /workspace \
 		$(DOCKER_ORG)/$*:latest /bin/bash
 
-# Quick access shells
-c64: shell-commodore-64
-nes: shell-nintendo-entertainment-system
-spectrum: shell-sinclair-zx-spectrum
-amiga: shell-commodore-amiga
-genesis: shell-sega-genesis
+# No shortcuts - use full system names for consistency
 
 # Create a new project for a system
 new-project:
 ifndef NAME
-	$(error NAME is not set. Use: make new-project NAME=myproject SYSTEM=c64)
+	$(error NAME is not set. Use: make new-project NAME=myproject SYSTEM=commodore-64)
 endif
 ifndef SYSTEM
-	$(error SYSTEM is not set. Use: make new-project NAME=myproject SYSTEM=c64)
+	$(error SYSTEM is not set. Use: make new-project NAME=myproject SYSTEM=commodore-64)
 endif
 	@echo "📁 Creating new $(SYSTEM) project: $(NAME)"
 	@mkdir -p projects/$(SYSTEM)/$(NAME)
@@ -110,10 +105,10 @@ dev-setup:
 # Run assembler in container
 assemble:
 ifndef FILE
-	$(error FILE is not set. Use: make assemble FILE=main.asm SYSTEM=c64)
+	$(error FILE is not set. Use: make assemble FILE=main.asm SYSTEM=commodore-64)
 endif
 ifndef SYSTEM
-	$(error SYSTEM is not set. Use: make assemble FILE=main.asm SYSTEM=c64)
+	$(error SYSTEM is not set. Use: make assemble FILE=main.asm SYSTEM=commodore-64)
 endif
 	@echo "⚙️  Assembling $(FILE) for $(SYSTEM)..."
 	@docker run --rm \
@@ -125,12 +120,10 @@ help:
 	@echo "Code198x Development Environment - Make targets"
 	@echo ""
 	@echo "Quick Start:"
-	@echo "  make dev-setup      - Set up development directories"
-	@echo "  make c64            - Start Commodore 64 shell"
-	@echo "  make nes            - Start NES shell"
-	@echo "  make spectrum       - Start ZX Spectrum shell"
-	@echo "  make amiga          - Start Amiga shell"
-	@echo "  make genesis        - Start Sega Genesis shell"
+	@echo "  make dev-setup                    - Set up development directories"
+	@echo "  make shell-commodore-64          - Start Commodore 64 shell"
+	@echo "  make shell-nintendo-entertainment-system - Start NES shell"
+	@echo "  make shell-sinclair-zx-spectrum  - Start ZX Spectrum shell"
 	@echo ""
 	@echo "Development:"
 	@echo "  make shell-<system> - Start development shell for system"

@@ -51,7 +51,7 @@ COPY --from=builder /opt/nasm /opt/nasm
 # Add labels
 LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
 LABEL org.opencontainers.image.description="NASM assembler for x86 development"
-LABEL org.opencontainers.image.version="${NASM_VERSION}"
+LABEL org.opencontainers.image.version="2.16.03"
 
 # Set PATH
 ENV PATH="/opt/nasm/bin:$PATH"

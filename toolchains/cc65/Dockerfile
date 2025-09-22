@@ -50,7 +50,7 @@ COPY --from=builder /opt/cc65 /opt/cc65
 # Add labels for tracking
 LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
 LABEL org.opencontainers.image.description="cc65 toolchain for 6502 development"
-LABEL org.opencontainers.image.version="${CC65_VERSION}"
+LABEL org.opencontainers.image.version="V2.19"
 
 # Set PATH for convenience (though base images will handle this)
 ENV PATH="/opt/cc65/bin:$PATH"

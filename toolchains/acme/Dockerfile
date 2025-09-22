@@ -47,7 +47,7 @@ COPY --from=builder /opt/acme /opt/acme
 # Add labels
 LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
 LABEL org.opencontainers.image.description="ACME assembler for 6502 development"
-LABEL org.opencontainers.image.version="${ACME_VERSION}"
+LABEL org.opencontainers.image.version="0.97.0"
 
 # Set PATH
 ENV PATH="/opt/acme/bin:$PATH"

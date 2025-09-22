@@ -55,7 +55,7 @@ COPY --from=builder /opt/sjasmplus /opt/sjasmplus
 # Add labels
 LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
 LABEL org.opencontainers.image.description="SjASMPlus Z80 assembler"
-LABEL org.opencontainers.image.version="${SJASMPLUS_VERSION}"
+LABEL org.opencontainers.image.version="v1.20.3"
 
 # Set PATH
 ENV PATH="/opt/sjasmplus/bin:$PATH"
