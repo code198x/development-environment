@@ -3,32 +3,7 @@ name: Create Versioned Release
 on:
   push:
     tags:
-      - 'v*.*.*'  # Triggers on version tags like v1.0.0
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Release version (e.g., v1.0.0)'
-        required: true
-        type: string
-      prerelease:
-        description: 'Mark as pre-release'
-        required: false
-        type: boolean
-        default: false
-
-env:
-  DOCKER_ORG: code198x
-  GHCR_ORG: ghcr.io/code198x
-  # Improve Docker build performance and reliability
-  DOCKER_BUILDKIT: 1
-  BUILDX_NO_DEFAULT_ATTESTATIONS: 1
-  # Registry rate limiting protection
-  REGISTRY_RETRY_ATTEMPTS: 3
-  REGISTRY_RETRY_DELAY: 30
-
-permissions:
-  contents: write
-  packages: write
+      - 'v*'
 
 jobs:
   prepare-release:
@@ -36,374 +11,92 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
-      is-prerelease: ${{ steps.version.outputs.is-prerelease }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Determine version
+      - name: Extract version from tag
         id: version
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Validate version format
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            VERSION="${{ github.event.inputs.version }}"
-            IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
-          else
-            VERSION="${{ github.ref_name }}"
-            # Check if this is a prerelease based on tag format
-            if [[ "$VERSION" =~ -alpha|-beta|-rc ]]; then
-              IS_PRERELEASE="true"
-            else
-              IS_PRERELEASE="false"
-            fi
+          VERSION="${{ steps.version.outputs.version }}"
+          if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format: $VERSION"
+            echo "Expected format: vX.Y.Z (e.g., v1.0.0)"
+            exit 1
           fi
 
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "is-prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
-          echo "Release version: $VERSION (prerelease: $IS_PRERELEASE)"
-
-  # Build toolchain images first (these are cached aggressively)
-  build-toolchains:
-    name: Build Toolchain Images
-    needs: prepare-release
-    strategy:
-      matrix:
-        include:
-          - toolchain: cc65
-            version: v2.19
-            build-time: high  # This one takes 35+ minutes
-          - toolchain: acme
-            version: v0.97.0
-            build-time: low
-          - toolchain: vasm
-            version: v1.9.1
-            build-time: medium
-          - toolchain: sjasmplus
-            version: v1.20.3
-            build-time: low
-          - toolchain: armips
-            version: latest
-            build-time: medium
-          - toolchain: nasm
-            version: v2.16.03
-            build-time: low
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push toolchain
-        uses: docker/build-push-action@v5
-        with:
-          context: ./toolchains/${{ matrix.toolchain }}
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:${{ matrix.version }}
-            ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:latest
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/toolchains/${{ matrix.toolchain }}:buildcache,mode=max
-          platforms: linux/amd64,linux/arm64
-
-  # Build base images with version tags (now using pre-built toolchains)
-  build-base-images:
-    name: Build Base Images
-    needs: [prepare-release, build-toolchains]  # Wait for toolchains
-    uses: ./.github/workflows/build-system-image.yml
-    strategy:
-      matrix:
-        include:
-          - system-name: code198x-base
-            display-name: Code Like It's 198x Base
-          - system-name: 6502-base
-            display-name: 6502 Base
-          - system-name: z80-base
-            display-name: Z80 Base
-          - system-name: 68000-base
-            display-name: 68000 Base
-          - system-name: 8080-base
-            display-name: 8080 Base
-          - system-name: 6809-base
-            display-name: 6809 Base
-          - system-name: mips-base
-            display-name: MIPS Base
-          - system-name: arm-base
-            display-name: ARM Base
-          - system-name: sh-base
-            display-name: SuperH Base
-          - system-name: x86-base
-            display-name: x86 Base
-          - system-name: v30-base
-            display-name: V30 Base
-          - system-name: tlcs-base
-            display-name: TLCS Base
-    with:
-      system-name: ${{ matrix.system-name }}
-      display-name: ${{ matrix.display-name }}
-      version-tag: ${{ needs.prepare-release.outputs.version }}
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-
-  # Build all 64 system containers with version tags
-  build-systems:
+  # Call the main build workflow with version tag
+  # This ensures we have a single source of truth for the system list
+  build-all-systems:
     name: Build All Systems
-    needs: [prepare-release, build-base-images]
-    uses: ./.github/workflows/build-system-image.yml
-    strategy:
-      matrix:
-        include:
-          # 6502 Systems
-          - system-name: commodore-64
-            display-name: Commodore 64
-          - system-name: commodore-128
-            display-name: Commodore 128
-          - system-name: commodore-pet
-            display-name: Commodore PET
-          - system-name: commodore-plus4
-            display-name: Commodore Plus/4
-          - system-name: acorn-bbc-micro
-            display-name: BBC Micro
-          - system-name: apple-ii
-            display-name: Apple II
-          - system-name: atari-2600
-            display-name: Atari 2600
-          - system-name: atari-800
-            display-name: Atari 800
-          - system-name: nintendo-nes
-            display-name: Nintendo NES
-          - system-name: nintendo-donkey-kong
-            display-name: Nintendo Donkey Kong
-
-          # Z80 Systems
-          - system-name: sinclair-zx-spectrum
-            display-name: ZX Spectrum
-          - system-name: sinclair-zx81
-            display-name: ZX81
-          - system-name: amstrad-cpc
-            display-name: Amstrad CPC
-          - system-name: msx
-            display-name: MSX
-          - system-name: sam-coupe
-            display-name: Sam Coupé
-
-          # 68000 Systems
-          - system-name: commodore-amiga
-            display-name: Commodore Amiga
-          - system-name: atari-st
-            display-name: Atari ST
-          - system-name: sega-genesis
-            display-name: Sega Genesis
-          - system-name: sega-32x
-            display-name: Sega 32X
-          - system-name: snk-neogeo-mvs
-            display-name: Neo Geo MVS
-          - system-name: snk-neogeo-aes
-            display-name: Neo Geo AES
-          - system-name: sharp-x68000
-            display-name: Sharp X68000
-
-          # 8080 Systems
-          - system-name: altair-8800
-            display-name: MITS Altair 8800
-          - system-name: imsai-8080
-            display-name: IMSAI 8080
-
-          # 6809 Systems
-          - system-name: dragon-32
-            display-name: Dragon 32
-          - system-name: dragon-64
-            display-name: Dragon 64
-          - system-name: tandy-trs80-model1
-            display-name: TRS-80 Model I
-
-          # MIPS Systems
-          - system-name: sony-playstation
-            display-name: Sony PlayStation
-          - system-name: nintendo-64
-            display-name: Nintendo 64
-
-          # ARM Systems
-          - system-name: nintendo-gba
-            display-name: Game Boy Advance
-          - system-name: nintendo-ds
-            display-name: Nintendo DS
-          - system-name: panasonic-3do
-            display-name: 3DO Interactive
-
-          # SuperH Systems
-          - system-name: sega-saturn
-            display-name: Sega Saturn
-          - system-name: sega-dreamcast
-            display-name: Sega Dreamcast
-
-          # x86 Systems
-          - system-name: fujitsu-fm-towns
-            display-name: FM Towns
-          - system-name: nec-pc9801
-            display-name: PC-9801
-          - system-name: nec-pc8801
-            display-name: PC-8801
-
-          # V30 Systems
-          - system-name: bandai-wonderswan
-            display-name: WonderSwan
-
-          # TLCS Systems
-          - system-name: snk-neogeo-pocket
-            display-name: Neo Geo Pocket
-
-          # Additional systems as per your complete list...
-          - system-name: enterprise-128
-            display-name: Enterprise 128
-          - system-name: oric-1
-            display-name: Oric-1
-          - system-name: oric-atmos
-            display-name: Oric Atmos
-          - system-name: thomson-mo5
-            display-name: Thomson MO5
-          - system-name: coleco-adam
-            display-name: ColecoVision Adam
-          - system-name: sega-game-gear
-            display-name: Sega Game Gear
-          - system-name: atari-lynx
-            display-name: Atari Lynx
-          - system-name: atari-jaguar
-            display-name: Atari Jaguar
-          - system-name: nec-turbografx16
-            display-name: TurboGrafx-16
-          - system-name: nec-pc-engine-supergx
-            display-name: PC Engine SuperGrafx
-          - system-name: compupro-system816
-            display-name: CompuPro System 816
-          - system-name: sharp-x1
-            display-name: Sharp X1
-          - system-name: general-computer-vectrex
-            display-name: Vectrex
-          - system-name: williams-defender
-            display-name: Williams Defender
-          - system-name: atari-asteroids
-            display-name: Atari Asteroids
-          - system-name: atari-tempest
-            display-name: Atari Tempest
-          - system-name: namco-pacman
-            display-name: Namco Pac-Man
-          - system-name: namco-galaga
-            display-name: Namco Galaga
-          - system-name: konami-gx400
-            display-name: Konami GX400
-          - system-name: capcom-street-fighter-ii
-            display-name: Capcom Street Fighter II
+    needs: prepare-release
+    uses: ./.github/workflows/docker-build.yml
     with:
-      system-name: ${{ matrix.system-name }}
-      display-name: ${{ matrix.display-name }}
       version-tag: ${{ needs.prepare-release.outputs.version }}
-    secrets:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+    secrets: inherit
 
   create-github-release:
     name: Create GitHub Release
-    needs: [prepare-release, build-systems]
+    needs: [prepare-release, build-all-systems]
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Generate release notes
-        id: release-notes
+      - name: Generate Release Notes
+        id: notes
         run: |
           VERSION="${{ needs.prepare-release.outputs.version }}"
 
-          # Get previous tag for changelog
-          PREVIOUS_TAG=$(git describe --tags --abbrev=0 --exclude="$VERSION" 2>/dev/null || echo "")
+          cat > release-notes.md << 'EOF'
+          # Docker Development Environment ${{ needs.prepare-release.outputs.version }}
 
-          echo "Generating release notes for $VERSION (previous: $PREVIOUS_TAG)"
+          ## 🚀 Release Overview
 
-          # Create release notes
-          cat > release-notes.md << EOF
-          # Code Like It's 198x Development Environment $VERSION
+          This release includes Docker images for all supported retro gaming systems, built with version tag **${{ needs.prepare-release.outputs.version }}**.
 
-          A comprehensive retro gaming development platform with 64 gaming systems across 12 processor families.
+          ## 📦 Available Images
 
-          ## 🎮 Gaming Systems Included
+          All images are available from GitHub Container Registry:
 
-          - **6502 Family**: Commodore 64/128, Apple II, Nintendo NES, Atari 2600/800, BBC Micro
-          - **Z80 Family**: ZX Spectrum, Amstrad CPC, MSX, Sam Coupé
-          - **68000 Family**: Amiga 500/1200, Sega Genesis, Neo Geo, Atari ST, Sharp X68000
-          - **8080 Family**: Altair 8800, IMSAI 8080
-          - **6809 Family**: Dragon 32/64, TRS-80
-          - **MIPS Family**: Sony PlayStation, Nintendo 64
-          - **ARM Family**: Game Boy Advance, Nintendo DS, 3DO
-          - **SuperH Family**: Sega Saturn, Dreamcast
-          - **x86 Family**: FM Towns, PC-9801
-          - **V30 Family**: Bandai WonderSwan
-          - **TLCS Family**: Neo Geo Pocket
-          - **Arcade Systems**: Pac-Man, Galaga, Street Fighter II, Defender
+          ```bash
+          docker pull ghcr.io/code198x/[system-name]:${{ needs.prepare-release.outputs.version }}
+          ```
 
-          ## 📚 For Educators
+          ### Supported Systems
 
-          This release provides stable, versioned development environments suitable for:
-          - Assembly language programming courses
-          - Retro gaming development workshops
-          - Computer architecture education
-          - Historical computing studies
+          - **6502 Family**: Commodore 64/128/VIC-20/PET/Plus4, Apple II, Nintendo NES, Atari 2600/800, BBC Micro, and more
+          - **Z80 Family**: ZX Spectrum, Amstrad CPC, MSX, Game Boy, Master System, and more
+          - **68000 Family**: Amiga, Atari ST, Sega Genesis, Neo Geo, and more
+          - **Other Architectures**: PlayStation, Nintendo 64, Game Boy Advance, Sega Saturn, and many more
 
-          ## 🐳 Container Usage
+          ## 🔧 Usage
 
-          All containers are available with this version tag:
-          \`\`\`bash
-          docker pull ghcr.io/code198x/commodore-64:$VERSION
-          docker pull ghcr.io/code198x/nintendo-nes:$VERSION
-          docker pull ghcr.io/code198x/sega-genesis:$VERSION
-          # ... and 61 more systems
-          \`\`\`
+          ```bash
+          # Pull a specific version
+          docker pull ghcr.io/code198x/commodore-64:${{ needs.prepare-release.outputs.version }}
 
-          ## 📖 Documentation
+          # Run the development environment
+          docker run -it -v $(pwd):/workspace ghcr.io/code198x/commodore-64:${{ needs.prepare-release.outputs.version }}
+          ```
 
-          - [Versioning Strategy](./VERSIONING.md)
-          - [System Documentation](./systems/)
-          - [Educational Resources](./docs/)
+          ## 📝 What's Changed
 
+          See the [CHANGELOG](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for detailed changes.
+
+          ---
+
+          **Full Documentation**: [Code Like It's 198x](https://code198x.stevehill.xyz)
           EOF
 
-          if [[ -n "$PREVIOUS_TAG" ]]; then
-            echo "" >> release-notes.md
-            echo "## 🔄 Changes Since $PREVIOUS_TAG" >> release-notes.md
-            echo "" >> release-notes.md
-            git log --pretty=format:"- %s" "$PREVIOUS_TAG..$VERSION" >> release-notes.md
-          fi
-
-          echo "release-notes-file=release-notes.md" >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ needs.prepare-release.outputs.version }}
-          name: Code Like It's 198x Development Environment ${{ needs.prepare-release.outputs.version }}
-          body_path: ${{ steps.release-notes.outputs.release-notes-file }}
-          prerelease: ${{ needs.prepare-release.outputs.is-prerelease == 'true' }}
-          generate_release_notes: true
+          name: Release ${{ needs.prepare-release.outputs.version }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update latest tag
-        if: needs.prepare-release.outputs.is-prerelease == 'false'
-        run: |
-          git tag -f latest
-          git push -f origin latest
