@@ -10,7 +10,8 @@ FROM ubuntu:24.04 AS builder
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    git \
+    wget \
+    unzip \
     ca-certificates \
     libsdl2-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -18,10 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build jzintv
 WORKDIR /build
 
-# Clone and build from GitHub
-# Split RUN commands to better handle failures
-RUN git config --global http.postBuffer 524288000 && \
-    git clone --depth=1 https://github.com/intvsteve/jzintv-mirror.git
+# Download source using wget instead of git clone to avoid network issues
+RUN wget -q https://github.com/intvsteve/jzintv-mirror/archive/refs/heads/main.zip && \
+    unzip -q main.zip && \
+    mv jzintv-mirror-main jzintv-mirror
 
 RUN cd jzintv-mirror/src && \
     # Build just the tools we need
