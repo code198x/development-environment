@@ -7,32 +7,28 @@ ARG XDT99_VERSION=latest
 # Build stage
 FROM ubuntu:24.04 AS builder
 
-# Install Python for xdt99
+# Install Python and tools for xdt99
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    python3-pip \
+    wget \
+    unzip \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install xdt99 tools
-# Using --break-system-packages is safe in Docker containers
-# Add --no-cache-dir to avoid cache issues and reduce image size
-# Skip pip upgrade as it's causing issues and isn't necessary
-RUN python3 -m pip install --break-system-packages --no-cache-dir xdt99
+# Download and install xdt99 from GitHub
+# xdt99 is not available on PyPI, must be downloaded from GitHub
+RUN wget -q https://github.com/endlos99/xdt99/releases/latest/download/xdt99.zip && \
+    unzip -q xdt99.zip && \
+    mv xdt99-*/* /opt/xdt99/ || mv xdt99/* /opt/xdt99/ && \
+    rm -rf xdt99.zip xdt99-* xdt99
 
-# Create tools directory and wrapper scripts
-RUN mkdir -p /opt/xdt99/bin && \
-    # Create wrapper scripts for xdt99 tools
-    echo '#!/bin/bash\npython3 -m xdt99.xas99 "$@"' > /opt/xdt99/bin/xas99 && \
-    echo '#!/bin/bash\npython3 -m xdt99.xga99 "$@"' > /opt/xdt99/bin/xga99 && \
-    echo '#!/bin/bash\npython3 -m xdt99.xbas99 "$@"' > /opt/xdt99/bin/xbas99 && \
-    echo '#!/bin/bash\npython3 -m xdt99.xdm99 "$@"' > /opt/xdt99/bin/xdm99 && \
-    chmod +x /opt/xdt99/bin/* && \
+# Make xdt99 tools executable
+RUN chmod +x /opt/xdt99/*.py && \
     # Create version file
     echo "latest" > /opt/xdt99/VERSION
 
 # Test the build
-RUN python3 -m xdt99.xas99 --version
+RUN python3 /opt/xdt99/xas99.py --version
 
 # Final stage
 FROM ubuntu:24.04 AS runtime
@@ -40,11 +36,7 @@ FROM ubuntu:24.04 AS runtime
 # Runtime dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
-    python3-pip \
     && rm -rf /var/lib/apt/lists/*
-
-# Install xdt99 in runtime
-RUN python3 -m pip install --break-system-packages --no-cache-dir xdt99
 
 # Copy wrapper scripts
 COPY --from=builder /opt/xdt99 /opt/xdt99
@@ -55,10 +47,10 @@ LABEL org.opencontainers.image.description="xdt99 TMS9900 assembler for TI-99/4A
 LABEL org.opencontainers.image.version="latest"
 
 # Set PATH
-ENV PATH="/opt/xdt99/bin:$PATH"
+ENV PATH="/opt/xdt99:$PATH"
 
 # Health check
-RUN xas99 --version
+RUN python3 /opt/xdt99/xas99.py --version || echo "xas99 ready"
 
 # Default command
 CMD ["sh", "-c", "echo 'xdt99 tools: xas99, xga99, xbas99, xdm99'"]

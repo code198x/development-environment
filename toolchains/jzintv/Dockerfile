@@ -19,10 +19,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build jzintv
 WORKDIR /build
 
-# Download source using wget instead of git clone to avoid network issues
-RUN wget -q https://github.com/intvsteve/jzintv-mirror/archive/refs/heads/main.zip && \
-    unzip -q main.zip && \
-    mv jzintv-mirror-main jzintv-mirror
+# Download source using wget from retrofw/jzintv repository
+RUN wget -q https://github.com/retrofw/jzintv/archive/refs/heads/master.zip && \
+    unzip -q master.zip && \
+    mv jzintv-master jzintv-mirror
 
 RUN cd jzintv-mirror/src && \
     # Build just the tools we need
