@@ -18,10 +18,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build jzintv
 WORKDIR /build
 
-# Clone and build from GitHub (with retry logic for network issues)
-RUN git clone --depth=1 https://github.com/intvsteve/jzintv-mirror.git || \
-    (sleep 5 && git clone --depth=1 https://github.com/intvsteve/jzintv-mirror.git) && \
-    cd jzintv-mirror/src && \
+# Clone and build from GitHub
+# Split RUN commands to better handle failures
+RUN git config --global http.postBuffer 524288000 && \
+    git clone --depth=1 https://github.com/intvsteve/jzintv-mirror.git
+
+RUN cd jzintv-mirror/src && \
     # Build just the tools we need
     make -j$(nproc) as1600/as1600 utilities/bin2rom utilities/rom2bin && \
     # Create installation directory
