@@ -34,6 +34,7 @@ jobs:
     uses: ./.github/workflows/docker-build.yml
     with:
       version-tag: ${{ needs.prepare-release.outputs.version }}
+      build-systems: true
     secrets: inherit
 
   create-github-release:
