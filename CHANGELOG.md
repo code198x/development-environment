@@ -7,8 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2025-09-22
+
+### Changed
+- **Major Performance Improvements**: Switched 5 toolchains from source builds to pre-built Ubuntu packages
+  - binutils-sh: Build time reduced from 20+ minutes to ~7 seconds
+  - cc65: Build time reduced from 23 seconds to 7 seconds
+  - nasm: Build time reduced from 28 seconds to 5 seconds
+  - acme: Build time reduced from 35 seconds to 6 seconds
+  - yasm: Already using packages (no change)
+
 ### Added
-- Website changelog page for tracking platform updates
+- ZX Spectrum Next support via sjasmplus v1.21.0 with full Z80N instruction set
+- MEGA65 support via ACME v0.97 with 45GS02 CPU extensions
+- Commander X16 readiness (cc65 already supports it)
+- Fail-fast disabled in GitHub Actions for independent build failures
+
+### Fixed
+- SuperH processor base now builds successfully with binutils-sh4-linux-gnu package
+- NES Dockerfile corrected to use proper resource paths (nintendo-entertainment-system)
+- Workflow cascade failures prevented with fail-fast: false
+- Docker paths aligned with new toolchain directory structure
+
+### Technical Details
+- Timeline coverage: Systems from 1977 (Atari 2600) to 2004+ (Nintendo DS)
+- 56 systems actively building in CI/CD
+- 8 additional systems ready for activation (amstrad-pcw, atari-5200, atari-7800, mattel-intellivision, nintendo-snes, philips-cdi, sinclair-ql, ti-99-4a)
+- All builds passing with optimized toolchains
 
 ## [1.0.0] - 2025-09-20
 
