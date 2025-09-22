@@ -39,6 +39,11 @@ on:
         description: 'Version tag for release'
         required: true
         type: string
+      build-systems:
+        description: 'Build system images'
+        required: false
+        default: true
+        type: boolean
 
 concurrency:
   group: docker-build-${{ github.ref }}
@@ -568,7 +573,7 @@ jobs:
   build-commodore-64:
     name: "Commodore 64"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: commodore-64
@@ -582,7 +587,7 @@ jobs:
   build-commodore-vic-20:
     name: "Commodore VIC-20"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: commodore-vic-20
@@ -596,7 +601,7 @@ jobs:
   build-nintendo-nes:
     name: "Nintendo Entertainment System"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nintendo-entertainment-system
@@ -610,7 +615,7 @@ jobs:
   build-apple-ii:
     name: "Apple II"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: apple-ii
@@ -624,7 +629,7 @@ jobs:
   build-atari-2600:
     name: "Atari 2600"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: atari-2600
@@ -638,7 +643,7 @@ jobs:
   build-atari-800:
     name: "Atari 800"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: atari-800
@@ -652,7 +657,7 @@ jobs:
   build-acorn-bbc-micro:
     name: "Acorn BBC Micro"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: acorn-bbc-micro
@@ -666,7 +671,7 @@ jobs:
   build-acorn-electron:
     name: "Acorn Electron"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: acorn-electron
@@ -681,7 +686,7 @@ jobs:
   build-zx-spectrum:
     name: "Sinclair ZX Spectrum"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sinclair-zx-spectrum
@@ -695,7 +700,7 @@ jobs:
   build-amstrad-cpc:
     name: "Amstrad CPC"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: amstrad-cpc
@@ -709,7 +714,7 @@ jobs:
   build-msx:
     name: "MSX"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: msx
@@ -723,7 +728,7 @@ jobs:
   build-sega-master-system:
     name: "Sega Master System"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sega-master-system
@@ -737,7 +742,7 @@ jobs:
   build-nintendo-game-boy:
     name: "Nintendo Game Boy"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nintendo-game-boy
@@ -752,7 +757,7 @@ jobs:
   build-commodore-amiga:
     name: "Commodore Amiga"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: commodore-amiga
@@ -766,7 +771,7 @@ jobs:
   build-atari-st:
     name: "Atari ST"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: atari-st
@@ -780,7 +785,7 @@ jobs:
   build-sharp-x68000:
     name: "Sharp X68000"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sharp-x68000
@@ -797,7 +802,7 @@ jobs:
   build-commodore-pet:
     name: "Commodore PET"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: commodore-pet
@@ -811,7 +816,7 @@ jobs:
   build-commodore-128:
     name: "Commodore 128"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: commodore-128
@@ -825,7 +830,7 @@ jobs:
   build-commodore-plus4:
     name: "Commodore Plus/4"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: commodore-plus4
@@ -839,7 +844,7 @@ jobs:
   build-oric-atmos:
     name: "Oric Atmos"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: oric-atmos
@@ -853,7 +858,7 @@ jobs:
   build-oric-1:
     name: "Oric-1"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: oric-1
@@ -867,7 +872,7 @@ jobs:
   build-nec-turbografx16:
     name: "NEC TurboGrafx-16"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nec-turbografx16
@@ -881,7 +886,7 @@ jobs:
   build-nec-pc-engine-supergx:
     name: "NEC PC Engine SuperGrafx"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nec-pc-engine-supergx
@@ -895,7 +900,7 @@ jobs:
   build-atari-lynx:
     name: "Atari Lynx"
     needs: build-6502-base
-    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: atari-lynx
@@ -912,7 +917,7 @@ jobs:
   build-tandy-trs80-model1:
     name: "TRS-80 Model I"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: tandy-trs80-model1
@@ -926,7 +931,7 @@ jobs:
   build-sinclair-zx81:
     name: "Sinclair ZX81"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sinclair-zx81
@@ -940,7 +945,7 @@ jobs:
   build-coleco-adam:
     name: "Coleco Adam"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: coleco-adam
@@ -954,7 +959,7 @@ jobs:
   build-sega-game-gear:
     name: "Sega Game Gear"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sega-game-gear
@@ -968,7 +973,7 @@ jobs:
   build-sharp-x1:
     name: "Sharp X1"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sharp-x1
@@ -982,7 +987,7 @@ jobs:
   build-nec-pc8801:
     name: "NEC PC-8801"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nec-pc8801
@@ -996,7 +1001,7 @@ jobs:
   build-sam-coupe:
     name: "SAM Coupé"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sam-coupe
@@ -1010,7 +1015,7 @@ jobs:
   build-enterprise-128:
     name: "Enterprise 128"
     needs: build-z80-base
-    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: enterprise-128
@@ -1027,7 +1032,7 @@ jobs:
   build-sega-genesis:
     name: "Sega Genesis"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sega-genesis
@@ -1041,7 +1046,7 @@ jobs:
   build-snk-neogeo-mvs:
     name: "SNK Neo Geo MVS"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: snk-neogeo-mvs
@@ -1055,7 +1060,7 @@ jobs:
   build-snk-neogeo-aes:
     name: "SNK Neo Geo AES"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: snk-neogeo-aes
@@ -1069,7 +1074,7 @@ jobs:
   build-atari-jaguar:
     name: "Atari Jaguar"
     needs: build-68000-base
-    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: atari-jaguar
@@ -1086,7 +1091,7 @@ jobs:
   build-tandy-coco:
     name: "TRS-80 Color Computer"
     needs: build-6809-base
-    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: tandy-coco
@@ -1100,7 +1105,7 @@ jobs:
   build-dragon-32:
     name: "Dragon 32"
     needs: build-6809-base
-    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: dragon-32
@@ -1114,7 +1119,7 @@ jobs:
   build-dragon-64:
     name: "Dragon 64"
     needs: build-6809-base
-    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: dragon-64
@@ -1128,7 +1133,7 @@ jobs:
   build-thomson-mo5:
     name: "Thomson MO5"
     needs: build-6809-base
-    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: thomson-mo5
@@ -1142,7 +1147,7 @@ jobs:
   build-general-computer-vectrex:
     name: "Vectrex"
     needs: build-6809-base
-    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-6809-base.result == 'success' || needs.build-6809-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: general-computer-vectrex
@@ -1159,7 +1164,7 @@ jobs:
   build-altair-8800:
     name: "Altair 8800"
     needs: build-8080-base
-    if: always() && (needs.build-8080-base.result == 'success' || needs.build-8080-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-8080-base.result == 'success' || needs.build-8080-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: altair-8800
@@ -1173,7 +1178,7 @@ jobs:
   build-imsai-8080:
     name: "IMSAI 8080"
     needs: build-8080-base
-    if: always() && (needs.build-8080-base.result == 'success' || needs.build-8080-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-8080-base.result == 'success' || needs.build-8080-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: imsai-8080
@@ -1187,7 +1192,7 @@ jobs:
   build-compupro-system816:
     name: "CompuPro System 8/16"
     needs: build-8080-base
-    if: always() && (needs.build-8080-base.result == 'success' || needs.build-8080-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-8080-base.result == 'success' || needs.build-8080-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: compupro-system816
@@ -1204,7 +1209,7 @@ jobs:
   build-sony-playstation:
     name: "Sony PlayStation"
     needs: build-mips-base
-    if: always() && (needs.build-mips-base.result == 'success' || needs.build-mips-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-mips-base.result == 'success' || needs.build-mips-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sony-playstation
@@ -1218,7 +1223,7 @@ jobs:
   build-nintendo-64:
     name: "Nintendo 64"
     needs: build-mips-base
-    if: always() && (needs.build-mips-base.result == 'success' || needs.build-mips-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-mips-base.result == 'success' || needs.build-mips-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nintendo-64
@@ -1235,7 +1240,7 @@ jobs:
   build-nintendo-gba:
     name: "Nintendo Game Boy Advance"
     needs: build-arm-base
-    if: always() && (needs.build-arm-base.result == 'success' || needs.build-arm-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-arm-base.result == 'success' || needs.build-arm-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nintendo-gba
@@ -1249,7 +1254,7 @@ jobs:
   build-nintendo-ds:
     name: "Nintendo DS"
     needs: build-arm-base
-    if: always() && (needs.build-arm-base.result == 'success' || needs.build-arm-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-arm-base.result == 'success' || needs.build-arm-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nintendo-ds
@@ -1263,7 +1268,7 @@ jobs:
   build-panasonic-3do:
     name: "Panasonic 3DO"
     needs: build-arm-base
-    if: always() && (needs.build-arm-base.result == 'success' || needs.build-arm-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-arm-base.result == 'success' || needs.build-arm-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: panasonic-3do
@@ -1280,7 +1285,7 @@ jobs:
   build-sega-saturn:
     name: "Sega Saturn"
     needs: build-sh-base
-    if: always() && (needs.build-sh-base.result == 'success' || needs.build-sh-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-sh-base.result == 'success' || needs.build-sh-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sega-saturn
@@ -1294,7 +1299,7 @@ jobs:
   build-sega-dreamcast:
     name: "Sega Dreamcast"
     needs: build-sh-base
-    if: always() && (needs.build-sh-base.result == 'success' || needs.build-sh-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-sh-base.result == 'success' || needs.build-sh-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sega-dreamcast
@@ -1308,7 +1313,7 @@ jobs:
   build-sega-32x:
     name: "Sega 32X"
     needs: build-sh-base
-    if: always() && (needs.build-sh-base.result == 'success' || needs.build-sh-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-sh-base.result == 'success' || needs.build-sh-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: sega-32x
@@ -1325,7 +1330,7 @@ jobs:
   build-nec-pc9801:
     name: "NEC PC-9801"
     needs: build-x86-base
-    if: always() && (needs.build-x86-base.result == 'success' || needs.build-x86-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-x86-base.result == 'success' || needs.build-x86-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: nec-pc9801
@@ -1339,7 +1344,7 @@ jobs:
   build-fujitsu-fm-towns:
     name: "Fujitsu FM Towns"
     needs: build-x86-base
-    if: always() && (needs.build-x86-base.result == 'success' || needs.build-x86-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-x86-base.result == 'success' || needs.build-x86-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: fujitsu-fm-towns
@@ -1356,7 +1361,7 @@ jobs:
   build-bandai-wonderswan:
     name: "Bandai WonderSwan"
     needs: build-v30-base
-    if: always() && (needs.build-v30-base.result == 'success' || needs.build-v30-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-v30-base.result == 'success' || needs.build-v30-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: bandai-wonderswan
@@ -1373,7 +1378,7 @@ jobs:
   build-snk-neogeo-pocket:
     name: "SNK Neo Geo Pocket"
     needs: build-tlcs-base
-    if: always() && (needs.build-tlcs-base.result == 'success' || needs.build-tlcs-base.result == 'skipped') && github.event.inputs.build-systems != 'false'
+    if: always() && (needs.build-tlcs-base.result == 'success' || needs.build-tlcs-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
     uses: ./.github/workflows/build-system-image.yml
     with:
       system-name: snk-neogeo-pocket
