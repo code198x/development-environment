@@ -19,20 +19,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build jzintv
 WORKDIR /build
 
-# Download source using wget from retrofw/jzintv repository
-RUN wget -q https://github.com/retrofw/jzintv/archive/refs/heads/master.zip && \
-    unzip -q master.zip && \
-    mv jzintv-master jzintv-mirror
+# Download SDK-1600 which contains as1600 assembler
+RUN wget -q http://spatula-city.org/~im14u2c/intv/sdk1600/sdk1600-20181225.zip && \
+    unzip -q sdk1600-20181225.zip
 
-RUN cd jzintv-mirror/src && \
-    # Build just the tools we need
-    make -j$(nproc) as1600/as1600 utilities/bin2rom utilities/rom2bin && \
-    # Create installation directory
-    mkdir -p /opt/jzintv/bin && \
-    # Copy assembler and utilities
-    cp as1600/as1600 /opt/jzintv/bin/ && \
-    cp utilities/bin2rom /opt/jzintv/bin/ && \
-    cp utilities/rom2bin /opt/jzintv/bin/ && \
+# The SDK includes prebuilt Linux binaries
+RUN mkdir -p /opt/jzintv/bin && \
+    # Copy the assembler binary
+    cp sdk1600/bin/as1600 /opt/jzintv/bin/ && \
+    chmod +x /opt/jzintv/bin/as1600 && \
     # Create version file
     echo "latest" > /opt/jzintv/VERSION
 
