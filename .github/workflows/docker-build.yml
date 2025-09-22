@@ -598,7 +598,7 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
-  build-nintendo-nes:
+  build-nintendo-entertainment-system:
     name: "Nintendo Entertainment System"
     needs: build-6502-base
     if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
@@ -606,6 +606,20 @@ jobs:
     with:
       system-name: nintendo-entertainment-system
       display-name: Nintendo NES
+      test-command: --version
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-nintendo-snes:
+    name: "Nintendo Super NES"
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: nintendo-snes
+      display-name: Nintendo SNES
       test-command: --version
       version-tag: ${{ inputs.version-tag }}
     secrets:
@@ -648,6 +662,34 @@ jobs:
     with:
       system-name: atari-800
       display-name: Atari 800
+      test-command: --version
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-atari-5200:
+    name: "Atari 5200"
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: atari-5200
+      display-name: Atari 5200
+      test-command: --version
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-atari-7800:
+    name: "Atari 7800"
+    needs: build-6502-base
+    if: always() && (needs.build-6502-base.result == 'success' || needs.build-6502-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: atari-7800
+      display-name: Atari 7800
       test-command: --version
       version-tag: ${{ inputs.version-tag }}
     secrets:
@@ -705,6 +747,20 @@ jobs:
     with:
       system-name: amstrad-cpc
       display-name: Amstrad CPC
+      test-command: --help
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-amstrad-pcw:
+    name: "Amstrad PCW"
+    needs: build-z80-base
+    if: always() && (needs.build-z80-base.result == 'success' || needs.build-z80-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: amstrad-pcw
+      display-name: Amstrad PCW
       test-command: --help
       version-tag: ${{ inputs.version-tag }}
     secrets:
@@ -1085,6 +1141,34 @@ jobs:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
+  build-philips-cdi:
+    name: "Philips CD-i"
+    needs: build-68000-base
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: philips-cdi
+      display-name: Philips CD-i
+      test-command: -help
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  build-sinclair-ql:
+    name: "Sinclair QL"
+    needs: build-68000-base
+    if: always() && (needs.build-68000-base.result == 'success' || needs.build-68000-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: sinclair-ql
+      display-name: Sinclair QL
+      test-command: -help
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
   # ============================================
   # 6809 Family Systems
   # ============================================
@@ -1390,6 +1474,40 @@ jobs:
       DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 
   # ============================================
+  # CP1610 Family Systems (Mattel Intellivision)
+  # ============================================
+  build-mattel-intellivision:
+    name: "Mattel Intellivision"
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: mattel-intellivision
+      display-name: Mattel Intellivision
+      test-command: --help
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # ============================================
+  # TMS9900 Family Systems (TI-99/4A)
+  # ============================================
+  build-ti-99-4a:
+    name: "TI-99/4A"
+    needs: build-root-base
+    if: always() && (needs.build-root-base.result == 'success' || needs.build-root-base.result == 'skipped') && (github.event.inputs.build-systems != 'false' || inputs.build-systems != false)
+    uses: ./.github/workflows/build-system-image.yml
+    with:
+      system-name: ti-99-4a
+      display-name: TI-99/4A
+      test-command: --help
+      version-tag: ${{ inputs.version-tag }}
+    secrets:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+
+  # ============================================
   # Stage 4: Summary
   # ============================================
   summary:
@@ -1397,19 +1515,19 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs: [
-      # 6502 Family (20 systems)
-      build-commodore-64, build-commodore-vic-20, build-nintendo-nes, build-apple-ii,
-      build-atari-2600, build-atari-800, build-acorn-bbc-micro, build-acorn-electron,
+      # 6502 Family (23 systems)
+      build-commodore-64, build-commodore-vic-20, build-nintendo-entertainment-system, build-nintendo-snes, build-apple-ii,
+      build-atari-2600, build-atari-5200, build-atari-7800, build-atari-800, build-acorn-bbc-micro, build-acorn-electron,
       build-commodore-pet, build-commodore-128, build-commodore-plus4, build-oric-atmos,
       build-oric-1, build-nec-turbografx16, build-nec-pc-engine-supergx, build-atari-lynx,
-      # Z80 Family (16 systems)
-      build-zx-spectrum, build-amstrad-cpc, build-msx, build-sega-master-system,
+      # Z80 Family (17 systems)
+      build-zx-spectrum, build-amstrad-cpc, build-amstrad-pcw, build-msx, build-sega-master-system,
       build-nintendo-game-boy, build-tandy-trs80-model1, build-sinclair-zx81, build-coleco-adam,
       build-sega-game-gear, build-sharp-x1, build-nec-pc8801, build-sam-coupe,
       build-enterprise-128,
-      # 68000 Family (9 systems)
+      # 68000 Family (11 systems)
       build-commodore-amiga, build-atari-st, build-sharp-x68000, build-sega-genesis,
-      build-snk-neogeo-mvs, build-snk-neogeo-aes, build-atari-jaguar,
+      build-snk-neogeo-mvs, build-snk-neogeo-aes, build-atari-jaguar, build-philips-cdi, build-sinclair-ql,
       # 6809 Family (6 systems)
       build-tandy-coco, build-dragon-32, build-dragon-64, build-thomson-mo5,
       build-general-computer-vectrex,
@@ -1426,7 +1544,11 @@ jobs:
       # V30 Family (1 system)
       build-bandai-wonderswan,
       # TLCS Family (1 system)
-      build-snk-neogeo-pocket
+      build-snk-neogeo-pocket,
+      # CP1610 Family (1 system)
+      build-mattel-intellivision,
+      # TMS9900 Family (1 system)
+      build-ti-99-4a
     ]
 
     steps:
@@ -1504,18 +1626,66 @@ jobs:
         if: |
           needs.build-commodore-64.result == 'failure' ||
           needs.build-commodore-vic-20.result == 'failure' ||
-          needs.build-nintendo-nes.result == 'failure' ||
+          needs.build-nintendo-entertainment-system.result == 'failure' ||
+          needs.build-nintendo-snes.result == 'failure' ||
           needs.build-apple-ii.result == 'failure' ||
           needs.build-atari-2600.result == 'failure' ||
+          needs.build-atari-5200.result == 'failure' ||
+          needs.build-atari-7800.result == 'failure' ||
           needs.build-atari-800.result == 'failure' ||
           needs.build-acorn-bbc-micro.result == 'failure' ||
           needs.build-acorn-electron.result == 'failure' ||
+          needs.build-commodore-pet.result == 'failure' ||
+          needs.build-commodore-128.result == 'failure' ||
+          needs.build-commodore-plus4.result == 'failure' ||
+          needs.build-oric-atmos.result == 'failure' ||
+          needs.build-oric-1.result == 'failure' ||
+          needs.build-nec-turbografx16.result == 'failure' ||
+          needs.build-nec-pc-engine-supergx.result == 'failure' ||
+          needs.build-atari-lynx.result == 'failure' ||
           needs.build-zx-spectrum.result == 'failure' ||
           needs.build-amstrad-cpc.result == 'failure' ||
+          needs.build-amstrad-pcw.result == 'failure' ||
           needs.build-msx.result == 'failure' ||
           needs.build-sega-master-system.result == 'failure' ||
           needs.build-nintendo-game-boy.result == 'failure' ||
+          needs.build-tandy-trs80-model1.result == 'failure' ||
+          needs.build-sinclair-zx81.result == 'failure' ||
+          needs.build-coleco-adam.result == 'failure' ||
+          needs.build-sega-game-gear.result == 'failure' ||
+          needs.build-sharp-x1.result == 'failure' ||
+          needs.build-nec-pc8801.result == 'failure' ||
+          needs.build-sam-coupe.result == 'failure' ||
+          needs.build-enterprise-128.result == 'failure' ||
           needs.build-commodore-amiga.result == 'failure' ||
           needs.build-atari-st.result == 'failure' ||
-          needs.build-sharp-x68000.result == 'failure'
+          needs.build-sharp-x68000.result == 'failure' ||
+          needs.build-sega-genesis.result == 'failure' ||
+          needs.build-snk-neogeo-mvs.result == 'failure' ||
+          needs.build-snk-neogeo-aes.result == 'failure' ||
+          needs.build-atari-jaguar.result == 'failure' ||
+          needs.build-philips-cdi.result == 'failure' ||
+          needs.build-sinclair-ql.result == 'failure' ||
+          needs.build-tandy-coco.result == 'failure' ||
+          needs.build-dragon-32.result == 'failure' ||
+          needs.build-dragon-64.result == 'failure' ||
+          needs.build-thomson-mo5.result == 'failure' ||
+          needs.build-general-computer-vectrex.result == 'failure' ||
+          needs.build-altair-8800.result == 'failure' ||
+          needs.build-imsai-8080.result == 'failure' ||
+          needs.build-compupro-system816.result == 'failure' ||
+          needs.build-sony-playstation.result == 'failure' ||
+          needs.build-nintendo-64.result == 'failure' ||
+          needs.build-nintendo-gba.result == 'failure' ||
+          needs.build-nintendo-ds.result == 'failure' ||
+          needs.build-panasonic-3do.result == 'failure' ||
+          needs.build-sega-saturn.result == 'failure' ||
+          needs.build-sega-dreamcast.result == 'failure' ||
+          needs.build-sega-32x.result == 'failure' ||
+          needs.build-nec-pc9801.result == 'failure' ||
+          needs.build-fujitsu-fm-towns.result == 'failure' ||
+          needs.build-bandai-wonderswan.result == 'failure' ||
+          needs.build-snk-neogeo-pocket.result == 'failure' ||
+          needs.build-mattel-intellivision.result == 'failure' ||
+          needs.build-ti-99-4a.result == 'failure'
         run: exit 1
