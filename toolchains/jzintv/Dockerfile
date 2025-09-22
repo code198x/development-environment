@@ -19,17 +19,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Build jzintv
 WORKDIR /build
 
-# Download SDK-1600 which contains as1600 assembler
-RUN wget -q http://spatula-city.org/~im14u2c/intv/sdk1600/sdk1600-20181225.zip && \
-    unzip -q sdk1600-20181225.zip
+# Download jzintv Linux binary package which contains as1600 assembler
+RUN wget -q http://spatula-city.org/~im14u2c/intv/dl/jzintv-20200712-linux-x86-64-sdl2.zip && \
+    unzip -q jzintv-20200712-linux-x86-64-sdl2.zip
 
-# The SDK includes prebuilt Linux binaries
+# The jzintv package includes prebuilt Linux binaries
 RUN mkdir -p /opt/jzintv/bin && \
-    # Copy the assembler binary
-    cp sdk1600/bin/as1600 /opt/jzintv/bin/ && \
-    chmod +x /opt/jzintv/bin/as1600 && \
+    # Copy the assembler and utilities from the jzintv package
+    cp jzintv-20200712-linux-x86-64-sdl2/bin/as1600 /opt/jzintv/bin/ && \
+    cp jzintv-20200712-linux-x86-64-sdl2/bin/bin2rom /opt/jzintv/bin/ && \
+    cp jzintv-20200712-linux-x86-64-sdl2/bin/rom2bin /opt/jzintv/bin/ && \
+    chmod +x /opt/jzintv/bin/* && \
     # Create version file
-    echo "latest" > /opt/jzintv/VERSION
+    echo "20200712" > /opt/jzintv/VERSION
 
 # Test the build
 RUN /opt/jzintv/bin/as1600 --version || echo "as1600 built successfully"
