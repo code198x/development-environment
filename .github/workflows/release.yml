@@ -5,6 +5,11 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: read
+  packages: write
+  actions: read
+
 jobs:
   prepare-release:
     name: Prepare Release
