@@ -57,6 +57,7 @@ jobs:
     name: "Build Toolchain Images"
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - toolchain: cc65
@@ -95,9 +96,6 @@ jobs:
           - toolchain: fasmarm
             version: latest
             build-time: low
-          - toolchain: binutils-sh
-            version: latest
-            build-time: high
 
     steps:
       - name: Checkout code
