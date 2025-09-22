@@ -1,62 +1,17 @@
-# cc65 Toolchain Image
-# Builds the cc65 suite (C compiler, ca65 assembler, ld65 linker, etc.)
-# This is separated to enable caching and parallel builds
-
-ARG CC65_VERSION=V2.19
-
-# Build stage
+# cc65 Toolchain - 6502 Cross-Compiler Suite
 FROM ubuntu:24.04 AS builder
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    git \
-    wget \
-    ca-certificates \
+# Install cc65 from Ubuntu package repository
+RUN apt-get update && apt-get install -y \
+    cc65 \
+    cc65-doc \
     && rm -rf /var/lib/apt/lists/*
 
-# Build cc65
-ARG CC65_VERSION
-WORKDIR /build
+# Copy to /opt/cc65 for consistency with other toolchains
+RUN mkdir -p /opt/cc65/bin /opt/cc65/share && \
+    cp -r /usr/bin/cc65 /usr/bin/ca65 /usr/bin/ld65 /usr/bin/ar65 /usr/bin/od65 /usr/bin/sim65 /usr/bin/cl65 /usr/bin/da65 /usr/bin/co65 /usr/bin/grc65 /usr/bin/sp65 /opt/cc65/bin/ 2>/dev/null || true && \
+    cp -r /usr/share/cc65 /opt/cc65/share/ 2>/dev/null || true
 
-# Download and extract
-RUN wget -q https://github.com/cc65/cc65/archive/refs/tags/${CC65_VERSION}.tar.gz && \
-    tar -xzf ${CC65_VERSION}.tar.gz && \
-    rm ${CC65_VERSION}.tar.gz
-
-# Build with parallel make for speed
-RUN cd cc65-* && \
-    make -j$(nproc) PREFIX=/opt/cc65 && \
-    make install PREFIX=/opt/cc65 && \
-    # Create version file for tracking
-    echo "${CC65_VERSION}" > /opt/cc65/VERSION
-
-# Test the build
-RUN /opt/cc65/bin/cc65 --version && \
-    /opt/cc65/bin/ca65 --version && \
-    /opt/cc65/bin/ld65 --version
-
-# Final stage - minimal image with just the tools
-FROM ubuntu:24.04 AS runtime
-
-# Install only runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libc6 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy the built tools
+# Final stage - minimal runtime
+FROM scratch AS runtime
 COPY --from=builder /opt/cc65 /opt/cc65
-
-# Add labels for tracking
-LABEL org.opencontainers.image.source="https://github.com/code198x/development-environment"
-LABEL org.opencontainers.image.description="cc65 toolchain for 6502 development"
-LABEL org.opencontainers.image.version="V2.19"
-
-# Set PATH for convenience (though base images will handle this)
-ENV PATH="/opt/cc65/bin:$PATH"
-
-# Health check
-RUN cc65 --version && ca65 --version && ld65 --version
-
-# Default to just showing version
-CMD ["cc65", "--version"]
