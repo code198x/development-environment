@@ -16,8 +16,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install xdt99 tools
 # Using --break-system-packages is safe in Docker containers
-RUN python3 -m pip install --break-system-packages --upgrade pip && \
-    python3 -m pip install --break-system-packages xdt99
+# Add --no-cache-dir to avoid cache issues and reduce image size
+RUN python3 -m pip install --break-system-packages --no-cache-dir --upgrade pip && \
+    python3 -m pip install --break-system-packages --no-cache-dir xdt99
 
 # Create tools directory and wrapper scripts
 RUN mkdir -p /opt/xdt99/bin && \
@@ -43,7 +44,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install xdt99 in runtime
-RUN python3 -m pip install --break-system-packages xdt99
+RUN python3 -m pip install --break-system-packages --no-cache-dir xdt99
 
 # Copy wrapper scripts
 COPY --from=builder /opt/xdt99 /opt/xdt99
