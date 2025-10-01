@@ -124,31 +124,71 @@ This environment is designed for use with the [Code Like It's 198x](https://code
 
 ## 🔧 Troubleshooting
 
-### VICE Display Issues
+### Running VICE (Recommended Workflow)
 
-If VICE won't start with GUI, you may need X11 forwarding:
+**This container is designed primarily for building C64 programs.** For the best experience:
+
+1. **Build in the container** - Use the Docker environment for consistent compilation
+2. **Run on your host** - Use VICE installed natively on your machine for testing
+
+```bash
+# Build in container
+docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-64:latest \
+  acme -f cbm -o program.prg source.asm
+
+# Run on host (install VICE natively)
+x64sc program.prg
+```
+
+**Why this approach?**
+- Native VICE provides better performance and display quality
+- Avoids complex X11 forwarding configuration on macOS
+- Simpler setup for beginners
+
+### Installing VICE on Your Host
 
 **macOS:**
+```bash
+brew install vice
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get install vice
+```
+
+**Windows:**
+Download from [VICE website](https://vice-emu.sourceforge.io/)
+
+### Advanced: Running VICE from Container
+
+If you need to run VICE from within the container, X11 forwarding is required:
+
+**macOS with XQuartz:**
 ```bash
 # Install XQuartz
 brew install --cask xquartz
 
-# Allow X11 connections
-xhost +localhost
+# Enable TCP connections
+defaults write org.xquartz.X11 nolisten_tcp 0
 
-# Set DISPLAY variable
-export DISPLAY=:0
+# Restart XQuartz and allow connections
+# Note: XQuartz requires TCP port 6000, which may conflict with other services
+xhost +localhost
 ```
 
 **Linux:**
 ```bash
 # Allow X11 connections
 xhost +local:docker
+
+# Run with display forwarding
+docker run --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix ...
 ```
 
 ### Headless Mode
 
-VICE can run without GUI for automated builds:
+For automated builds and CI/CD, build without running the emulator:
 ```bash
 # Just assemble, don't run emulator
 acme -f cbm -o program.prg source.asm
@@ -165,7 +205,7 @@ sudo chown -R $(whoami):$(whoami) .
 
 ## 📝 Makefile Template
 
-Create a `Makefile` in your project:
+Create a `Makefile` in your project for building:
 
 ```makefile
 # Assembly project
@@ -184,6 +224,15 @@ clean:
 	rm -f $(TARGET).prg
 
 .PHONY: all run clean
+```
+
+**Usage:**
+```bash
+# Build in container
+docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-64:latest make
+
+# Run on host (requires VICE installed locally)
+make run
 ```
 
 ## 🐳 Building Custom Images
