@@ -215,7 +215,7 @@ docker push code198x/commodore-64:v1.0.0
 
 This environment is part of the Code Like It's 198x educational project.
 
-**Repository:** https://github.com/code198x/development-environment
+**Repository:** https://github.com/code198x/commodore-64-dev
 
 ## 📄 License
 

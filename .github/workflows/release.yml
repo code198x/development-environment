@@ -75,8 +75,8 @@ jobs:
             ```
 
             ### 📚 Documentation:
-            - [README](https://github.com/code198x/development-environment#readme)
-            - [Examples](https://github.com/code198x/development-environment/tree/main/examples)
+            - [README](https://github.com/code198x/commodore-64-dev#readme)
+            - [Examples](https://github.com/code198x/commodore-64-dev/tree/main/examples)
             - [Course website](https://code198x.stevehill.xyz)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
