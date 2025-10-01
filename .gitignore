@@ -1,23 +1,27 @@
-# Build outputs
+# C64 build artifacts
 *.prg
-*.tap
-*.nes
-*.adf
 *.o
-*.lst
-*.bin
+*.d64
+*.tap
+*.t64
 
-# OS files
+# VICE temporary files
+vicerc
+vice.log
+
+# macOS
 .DS_Store
-Thumbs.db
 
 # Editor files
 *.swp
+*.swo
 *~
 .vscode/
 .idea/
 
-# Test directories
-workspace/
-test/
-tmp/
+# Docker
+.dockerignore
+
+# Build directories
+build/
+dist/

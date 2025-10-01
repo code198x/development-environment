@@ -1,227 +1,229 @@
-# Code Like It's 198x Development Environment
+# Commodore 64 Development Environment
 
-Docker-based assembler toolchain for retro game development across classic 8-bit and 16-bit systems.
+Docker-based development environment for C64 programming with BASIC and Assembly language support.
 
-![Build Status](https://github.com/code198x/development-environment/actions/workflows/docker-build.yml/badge.svg)
-![Latest Release](https://img.shields.io/github/v/release/code198x/development-environment)
+## 🎯 What's Included
 
-**Current Version:** v2.0.0 (Released: September 22, 2025)
-
-## 📌 Versioning
-
-**For Educators:** Use specific version tags (e.g., `:v2.0.0`) to ensure consistency across semesters.
-
-```bash
-# Stable version (recommended for courses)
-docker pull ghcr.io/code198x/commodore-64:v2.0.0
-
-# Latest development version
-docker pull ghcr.io/code198x/commodore-64:latest
-```
-
-## 🎮 Supported Systems
-
-| System | Assembler | GHCR Image | Docker Hub |
-|--------|-----------|------------|------------|
-| Commodore 64 | ACME | `ghcr.io/code198x/commodore-64:v2.0.0` | `code198x/commodore-64:v2.0.0` |
-| ZX Spectrum | SjASMPlus | `ghcr.io/code198x/sinclair-zx-spectrum:v2.0.0` | `code198x/sinclair-zx-spectrum:v2.0.0` |
-| NES | cc65 | `ghcr.io/code198x/nintendo-entertainment-system:v2.0.0` | `code198x/nintendo-entertainment-system:v2.0.0` |
-| Amiga | VASM | `ghcr.io/code198x/commodore-amiga:v2.0.0` | `code198x/commodore-amiga:v2.0.0` |
-
-### Complete System List (64 Systems)
-
-<details>
-<summary>Click to expand full list of supported systems</summary>
-
-#### 6502 Family
-- Commodore 64, 128, PET, Plus/4
-- Apple II
-- Nintendo NES, Donkey Kong (Arcade)
-- Atari 2600, 800
-- Acorn BBC Micro
-
-#### Z80 Family
-- Sinclair ZX Spectrum, ZX81
-- Amstrad CPC
-- MSX
-- Sam Coupé
-- Enterprise 128
-- Oric-1, Oric Atmos
-- Thomson MO5
-- Coleco Adam
-- Sega Game Gear
-
-#### 68000 Family
-- Commodore Amiga
-- Atari ST, Lynx, Jaguar
-- Sega Genesis, 32X
-- SNK Neo Geo (MVS/AES)
-- Sharp X68000
-- Capcom Street Fighter II (CPS1)
-
-#### Other Processor Families
-- **8080**: Altair 8800, IMSAI 8080
-- **6809**: Dragon 32/64, TRS-80 Model I, Vectrex, Williams Defender
-- **MIPS**: Sony PlayStation, Nintendo 64
-- **ARM**: Game Boy Advance, Nintendo DS, 3DO
-- **SuperH**: Sega Saturn, Dreamcast
-- **x86**: FM Towns, PC-9801, PC-8801, CompuPro System 816, Sharp X1
-- **V30**: Bandai WonderSwan, TurboGrafx-16, PC Engine SuperGrafx
-- **TLCS-900H**: Neo Geo Pocket
-- **Arcade**: Asteroids, Tempest, Pac-Man, Galaga, Konami GX400
-
-</details>
+- **ACME Assembler** - Cross-assembler for 6502 code
+- **VICE Emulator** - Complete C64 emulator (x64sc)
+- **petcat** - Convert BASIC text files to PRG format
+- **Build tools** - make, git, and essential utilities
 
 ## 🚀 Quick Start
 
-### Using GitHub Container Registry (Recommended)
+### Option 1: Docker Compose (Recommended)
 
 ```bash
-# Commodore 64
-docker pull ghcr.io/code198x/commodore-64:v2.0.0
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-64:v2.0.0 -o program.prg main.asm
+# Start the environment
+docker-compose up -d
 
-# ZX Spectrum
-docker pull ghcr.io/code198x/sinclair-zx-spectrum:v2.0.0
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/sinclair-zx-spectrum:v2.0.0 main.asm
+# Enter the container
+docker-compose exec c64-dev bash
 
-# NES
-docker pull ghcr.io/code198x/nintendo-entertainment-system:v2.0.0
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/nintendo-entertainment-system:v2.0.0 main.asm -o main.o
-
-# Amiga
-docker pull ghcr.io/code198x/commodore-amiga:v2.0.0
-docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-amiga:v2.0.0 -Fhunkexe -o program main.asm
+# Stop when done
+docker-compose down
 ```
 
-### Using Docker Hub (Alternative)
+### Option 2: VS Code Dev Container
 
-Replace `ghcr.io/code198x/` with `code198x/` in the commands above.
+1. Install the "Dev Containers" extension in VS Code
+2. Open this folder in VS Code
+3. Click "Reopen in Container" when prompted
+4. VS Code will build and start the container automatically
 
-## 🏗️ Building Images Locally
+### Option 3: Docker CLI
 
 ```bash
-# Clone the repository
-git clone https://github.com/code198x/development-environment.git
-cd development-environment
+# Build the image
+docker build -t code198x/commodore-64:latest .
 
-# Build all images
-make build
+# Run interactively
+docker run -it --rm -v $(pwd):/workspace code198x/commodore-64:latest
 
-# Build a specific system
-make build-commodore-64
-
-# Test an assembler
-make test-commodore-64
+# Or run a specific command
+docker run --rm -v $(pwd):/workspace code198x/commodore-64:latest \
+  acme -f cbm -o program.prg source.asm
 ```
 
-## 📁 Repository Structure
+## 📚 Examples
 
-```
-development-environment/
-├── commodore-64/
-│   ├── Dockerfile          # ACME assembler
-│   └── test.asm           # Test file
-├── sinclair-zx-spectrum/
-│   ├── Dockerfile          # SjASMPlus assembler
-│   └── test.asm           # Test file
-├── nintendo-entertainment-system/
-│   ├── Dockerfile          # cc65 suite
-│   ├── nes.cfg            # Linker configuration
-│   └── test.asm           # Test file
-├── commodore-amiga/
-│   ├── Dockerfile          # VASM assembler
-│   └── test.asm           # Test file
-├── systems-config.json     # Central configuration
-├── scripts/
-│   ├── build-images.sh    # Build all images
-│   ├── generate-matrix.mjs # Generate CI/CD matrices
-│   └── add-system.mjs     # Add new systems
-└── Makefile               # Convenience targets
+Three complete example projects are included:
+
+### Assembly - Hello World
+```bash
+cd examples/assembly/hello
+make          # Build
+make run      # Run in VICE
 ```
 
-## 🔧 Matrix-Based Configuration
+### Assembly - Skyfall Game
+Complete responsive player control system from the Assembly Week 1 course:
+```bash
+cd examples/assembly/skyfall
+make          # Build
+make run      # Run in VICE
+```
 
-The entire system is configured through `systems-config.json`. Adding a new platform:
+### BASIC - Number Hunter
+Number guessing game from the BASIC Week 1 course:
+```bash
+cd examples/basic/number-hunter
+make          # Convert to PRG
+make run      # Run in VICE
+```
 
-1. Run the interactive script:
+## 🛠️ Common Commands
+
+### Assembly Development
+
+```bash
+# Assemble a program
+acme -f cbm -o program.prg source.asm
+
+# Run in emulator
+x64sc program.prg
+
+# With custom load address
+acme -f cbm -o program.prg --cpu 6510 source.asm
+```
+
+### BASIC Development
+
+```bash
+# Convert BASIC text to PRG
+petcat -w2 -o program.prg -- source.bas
+
+# The -w2 flag means "BASIC V2" (C64 BASIC version)
+
+# Run the program
+x64sc program.prg
+```
+
+### Project Structure
+
+Recommended project layout:
+```
+my-project/
+├── src/
+│   ├── main.asm      # Main source file
+│   └── includes/     # Include files
+├── build/            # Build output
+├── Makefile          # Build automation
+└── README.md         # Project documentation
+```
+
+## 🎓 Learning Resources
+
+This environment is designed for use with the [Code Like It's 198x](https://code198x.stevehill.xyz) educational platform.
+
+**Courses available:**
+- C64 BASIC Week 1 - Number guessing game
+- C64 Assembly Week 1 - Skyfall (player controls)
+
+**Code samples:** https://github.com/code198x/code-samples
+
+## 🔧 Troubleshooting
+
+### VICE Display Issues
+
+If VICE won't start with GUI, you may need X11 forwarding:
+
+**macOS:**
+```bash
+# Install XQuartz
+brew install --cask xquartz
+
+# Allow X11 connections
+xhost +localhost
+
+# Set DISPLAY variable
+export DISPLAY=:0
+```
+
+**Linux:**
+```bash
+# Allow X11 connections
+xhost +local:docker
+```
+
+### Headless Mode
+
+VICE can run without GUI for automated builds:
+```bash
+# Just assemble, don't run emulator
+acme -f cbm -o program.prg source.asm
+```
+
+### File Permissions
+
+If you encounter permission issues with files created in the container:
+
+```bash
+# Change ownership to your user
+sudo chown -R $(whoami):$(whoami) .
+```
+
+## 📝 Makefile Template
+
+Create a `Makefile` in your project:
+
+```makefile
+# Assembly project
+TARGET = program
+SRC = $(TARGET).asm
+
+all: $(TARGET).prg
+
+$(TARGET).prg: $(SRC)
+	acme -f cbm -o $@ $<
+
+run: $(TARGET).prg
+	x64sc $<
+
+clean:
+	rm -f $(TARGET).prg
+
+.PHONY: all run clean
+```
+
+## 🐳 Building Custom Images
+
+To customize the environment:
+
+1. Edit `Dockerfile` to add tools or change configuration
+2. Rebuild:
    ```bash
-   node scripts/add-system.mjs
+   docker-compose build
+   # or
+   docker build -t code198x/commodore-64:latest .
    ```
 
-2. Or manually update `systems-config.json` and create the system directory
+## 📦 Publishing
 
-3. The CI/CD pipeline automatically adapts to include the new system
-
-## 🏗️ Base Image Architecture
-
-To reduce duplication and improve build efficiency, the system uses layered base images organized by processor architecture:
-
-- **retro-base**: Common Ubuntu 24.04 foundation with build tools
-- **6502-base**: For Commodore 64, NES, Apple II, Atari 2600, etc.
-- **z80-base**: For ZX Spectrum, Amstrad CPC, Game Boy, etc.
-- **68000-base**: For Amiga, Atari ST, etc.
-
-See [BASE_IMAGES.md](BASE_IMAGES.md) for detailed architecture documentation.
-
-## 🧪 Testing
-
-Each system includes a test file:
+To share your image on Docker Hub:
 
 ```bash
-# Test all systems
-make test
+# Tag with version
+docker tag code198x/commodore-64:latest code198x/commodore-64:v1.0.0
 
-# Test specific system
-make test-commodore-64
-
-# Verify in CI/CD style
-node scripts/generate-matrix.mjs verify
+# Push to Docker Hub
+docker push code198x/commodore-64:latest
+docker push code198x/commodore-64:v1.0.0
 ```
-
-## 🔄 CI/CD Integration
-
-### GitHub Actions
-
-The workflow automatically:
-- Builds Docker images for all systems in parallel
-- Publishes to GitHub Container Registry (always)
-- Publishes to Docker Hub (when credentials configured)
-- Tests each assembler with example code
-- Creates releases with image information
-
-### Using in Your CI/CD
-
-```yaml
-# Example GitHub Actions job
-- name: Assemble C64 code
-  run: |
-    docker pull ghcr.io/code198x/commodore-64:latest
-    docker run --rm -v $(pwd):/workspace ghcr.io/code198x/commodore-64:latest -o output.prg main.asm
-```
-
-## 📚 Documentation
-
-- [Setup Guide](SETUP.md) - Configure Docker Hub credentials
-- [Systems Config](systems-config.json) - Platform definitions
-- [GitHub Actions](.github/workflows/docker-build.yml) - CI/CD pipeline
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Add your system using `node scripts/add-system.mjs`
-3. Test locally with `make test-<system>`
-4. Submit a pull request
+This environment is part of the Code Like It's 198x educational project.
 
-## 📜 License
+**Repository:** https://github.com/code198x/development-environment
+
+## 📄 License
 
 MIT License - See LICENSE file for details
 
-## 🔗 Related Projects
+## 🎮 About
 
-- [Code Like It's 198x Website](https://code198x.stevehill.xyz) - Main educational platform
-- [Code Samples](https://github.com/code198x/code-samples) - Example code for lessons
+Code Like It's 198x teaches retro game development for classic 8-bit and 16-bit systems. This C64 environment provides everything needed to start coding for the legendary Commodore 64.
 
----
-
-Built with ❤️ for the retro computing community
+**Website:** https://code198x.stevehill.xyz
+**Course Materials:** https://github.com/code198x/
